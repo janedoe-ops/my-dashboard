@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Dashboard</title>
+  <style>
+    body { font-family: sans-serif; background: #121212; color: #f0f0f0; padding: 20px; }
+    h1 { text-align: center; }
+    section { margin: 20px 0; }
+    .news, .stocks { display: flex; flex-direction: column; gap: 5px; }
+    a { color: #1e90ff; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h1>🌍 Current Status Dashboard</h1>
+
+  <section>
+    <h2>📰 Latest News</h2>
+    <div class="news" id="news"></div>
+  </section>
+
+  <section>
+    <h2>📈 Stocks</h2>
+    <div class="stocks" id="stocks"></div>
+  </section>
+
+  <script>
+    // 1️⃣ News - using GNews free API
+    const NEWS_API_KEY = 'YOUR_GNEWS_API_KEY'; // sign up free at gnews.io
+    fetch(`https://gnews.io/api/v4/top-headlines?lang=en&token=${https://gnews.io/}`)
+      .then(res => res.json())
+      .then(data => {
+        const newsDiv = document.getElementById('news');
+        data.articles.slice(0,5).forEach(article => {
+          const a = document.createElement('a');
+          a.href = article.url;
+          a.textContent = `${article.source.name}: ${article.title}`;
+          a.target = "_blank";
+          newsDiv.appendChild(a);
+        });
+      });
+
+    // 2️⃣ Stocks - using Finnhub free API
+    const STOCK_API_KEY = 'YOUR_FINNHUB_API_KEY'; // sign up free at finnhub.io
+    const stocks = ['AAPL','TSLA','SPY'];
+    const stocksDiv = document.getElementById('stocks');
+    stocks.forEach(symbol => {
+      fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${https://finnhub.io/}`)
+        .then(res => res.json())
+        .then(data => {
+          const p = document.createElement('p');
+          p.textContent = `${symbol}: $${data.c}`;
+          stocksDiv.appendChild(p);
+        });
+    });
+  </script>
+</body>
+</html>
