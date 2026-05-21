@@ -8,19 +8,19 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0d0d0d;
-      --surface: #161616;
+      --bg:       #0d0d0d;
+      --surface:  #161616;
       --surface2: #1f1f1f;
-      --border: #2a2a2a;
-      --accent: #e8ff47;
-      --accent2: #47c8ff;
-      --purple: #b47fff;
-      --red: #ff4747;
-      --green: #47ff8a;
-      --yellow: #e8ff47;
-      --muted: #777;
-      --text: #ffffff;
-      --text-dim: #bbbbbb;
+      --border:   #2e2e2e;
+      --text:     #ffffff;
+      --dim:      #aaaaaa;
+      --muted:    #666666;
+      --red:      #d94f4f;
+      --red-dark: #7a1c1c;
+      --green:    #47c47a;
+      --orange:   #e07d3a;
+      --blue:     #47aaff;
+      --purple:   #9f6fff;
     }
 
     body {
@@ -43,14 +43,10 @@
     }
     #header h1 { font-size: 15px; color: #fff; letter-spacing: 3px; text-transform: uppercase; }
     #clock { font-size: 20px; font-weight: bold; color: #fff; letter-spacing: 2px; }
-    #date-display { color: var(--text-dim); font-size: 11px; text-align: right; }
+    #date-display { color: var(--dim); font-size: 11px; text-align: right; }
 
     /* ── Grid ── */
-    #grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 10px;
-    }
+    #grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
 
     .panel {
       background: var(--surface);
@@ -63,7 +59,7 @@
       font-size: 10px;
       letter-spacing: 2px;
       text-transform: uppercase;
-      color: #fff;
+      color: var(--dim);
       border-bottom: 1px solid var(--border);
       padding-bottom: 6px;
       margin-bottom: 8px;
@@ -72,313 +68,183 @@
       align-items: center;
     }
 
-    .panel-title .badge {
-      background: var(--accent);
-      color: #000;
+    .badge {
+      background: #333;
+      color: #fff;
       font-size: 9px;
-      padding: 1px 5px;
+      padding: 1px 6px;
+      letter-spacing: 1px;
+    }
+    .badge.live      { background: #1a4a2a; color: var(--green); }
+    .badge.err       { background: var(--red-dark); color: #fff; }
+
+    /* ── Buttons ── */
+    .btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--dim);
+      font-family: inherit;
+      font-size: 12px;
+      padding: 4px 10px;
+      cursor: pointer;
+    }
+    .btn:hover { border-color: var(--red); color: var(--red); }
+    .btn-primary {
+      background: var(--red-dark);
+      border: none;
+      color: #fff;
+      font-family: inherit;
+      font-size: 12px;
+      padding: 4px 12px;
+      cursor: pointer;
       font-weight: bold;
     }
-    .panel-title .badge.connected { background: var(--green); }
-    .panel-title .badge.error     { background: var(--red); color: #fff; }
+    .btn-primary:hover { background: #9e2222; }
+    .btn-icon {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 12px;
+      padding: 0 4px;
+      line-height: 1;
+    }
+    .btn-icon:hover { color: var(--red); }
 
-    /* ── WHOOP Panel ── */
+    /* ── Inputs ── */
+    .inp {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: #fff;
+      font-family: inherit;
+      font-size: 12px;
+      padding: 4px 8px;
+    }
+    .inp:focus { outline: none; border-color: var(--dim); }
+    .inp::placeholder { color: var(--muted); }
+
+    /* ── Scrollable ── */
+    .scroll { max-height: 260px; overflow-y: auto; }
+    .scroll::-webkit-scrollbar { width: 3px; }
+    .scroll::-webkit-scrollbar-track { background: transparent; }
+    .scroll::-webkit-scrollbar-thumb { background: var(--border); }
+
+    /* ── Utility ── */
+    .loading { color: var(--muted); font-size: 12px; padding: 4px 0; }
+    .error-msg { color: var(--red); font-size: 12px; padding: 4px 0; }
+    .row { display: flex; gap: 6px; align-items: center; }
+
+    /* ── WHOOP ── */
     #panel-whoop { grid-column: 1 / 4; }
 
     #whoop-connect-area { text-align: center; padding: 20px 0; }
     #whoop-connect-btn {
-      background: var(--accent);
-      color: #000;
+      background: var(--red-dark);
+      color: #fff;
       border: none;
       padding: 10px 28px;
       font-family: inherit;
-      font-size: 13px;
+      font-size: 14px;
       font-weight: bold;
       cursor: pointer;
       letter-spacing: 1px;
     }
-    #whoop-connect-btn:hover { opacity: 0.85; }
-    #whoop-hint { color: var(--muted); font-size: 10px; margin-top: 8px; }
+    #whoop-connect-btn:hover { background: #9e2222; }
+    #whoop-hint { color: var(--muted); font-size: 11px; margin-top: 8px; }
 
-    .whoop-metrics {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-    }
-    .whoop-card {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      padding: 10px;
-    }
-    .whoop-card-title {
-      font-size: 9px;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 6px;
-    }
-    .whoop-big {
-      font-size: 36px;
-      font-weight: bold;
-      line-height: 1;
-      margin-bottom: 8px;
-    }
+    .whoop-metrics { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+    .whoop-card { background: var(--surface2); border: 1px solid var(--border); padding: 10px; }
+    .whoop-card-title { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+    .whoop-big { font-size: 36px; font-weight: bold; line-height: 1; margin-bottom: 8px; }
     .whoop-big.c-green  { color: var(--green); }
-    .whoop-big.c-yellow { color: var(--yellow); }
+    .whoop-big.c-orange { color: var(--orange); }
     .whoop-big.c-red    { color: var(--red); }
-    .whoop-big.c-blue   { color: var(--accent2); }
+    .whoop-big.c-blue   { color: var(--blue); }
     .whoop-big.c-purple { color: var(--purple); }
-
-    .whoop-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 11px;
-      padding: 3px 0;
-      border-bottom: 1px solid var(--border);
-    }
+    .whoop-row { display: flex; justify-content: space-between; font-size: 11px; padding: 3px 0; border-bottom: 1px solid var(--border); }
     .whoop-row:last-child { border-bottom: none; }
     .whoop-row .k { color: var(--muted); }
-    .whoop-row .v { color: var(--text); }
-
-    .whoop-workout {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 4px 0;
-      border-bottom: 1px solid var(--border);
-      font-size: 11px;
-      gap: 6px;
-    }
+    .whoop-row .v { color: #fff; }
+    .whoop-workout { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-bottom: 1px solid var(--border); font-size: 11px; gap: 6px; }
     .whoop-workout:last-child { border-bottom: none; }
-    .wo-sport { color: var(--accent2); min-width: 90px; }
+    .wo-sport { color: var(--blue); min-width: 90px; }
     .wo-strain { color: #fff; font-weight: bold; width: 28px; text-align: right; }
-    .wo-dur { color: var(--text-dim); width: 50px; text-align: right; }
+    .wo-dur { color: var(--dim); width: 50px; text-align: right; }
     .wo-date { color: var(--muted); font-size: 10px; width: 55px; text-align: right; }
-
-    .whoop-footer {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      margin-top: 8px;
-      padding-top: 6px;
-      border-top: 1px solid var(--border);
-    }
-    .whoop-footer button {
-      background: none;
-      border: 1px solid var(--border);
-      color: var(--text-dim);
-      font-family: inherit;
-      font-size: 10px;
-      padding: 3px 8px;
-      cursor: pointer;
-    }
-    .whoop-footer button:hover { border-color: var(--accent); color: var(--accent); }
-    .whoop-footer button.danger:hover { border-color: var(--red); color: var(--red); }
-
-    /* ── News ── */
-    #panel-news  { grid-column: 1 / 3; }
-    #panel-news2 { grid-column: 3 / 4; }
-
-    .news-item { padding: 5px 0; border-bottom: 1px solid var(--border); line-height: 1.4; }
-    .news-item:last-child { border-bottom: none; }
-    .news-item a { color: #fff; text-decoration: none; display: block; font-size: 13px; line-height: 1.5; }
-    .news-item a:hover { color: var(--accent2); }
-    .news-item .meta { color: var(--muted); font-size: 11px; margin-top: 2px; }
-    .news-item .src-tag {
-      display: inline-block;
-      background: var(--surface2);
-      color: var(--accent2);
-      font-size: 9px;
-      padding: 1px 4px;
-      margin-right: 4px;
-    }
-
-    /* ── Cycling Skills ── */
-    #panel-skills { grid-column: 1 / 2; }
-
-    .skill-row { display: flex; align-items: center; gap: 6px; padding: 4px 0; border-bottom: 1px solid var(--border); }
-    .skill-row:last-of-type { border-bottom: none; }
-    .skill-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .skill-bar-wrap { width: 80px; height: 6px; background: var(--border); flex-shrink: 0; }
-    .skill-bar { height: 100%; background: var(--accent); transition: width 0.3s; }
-    .skill-score { font-size: 11px; color: #fff; width: 24px; text-align: right; flex-shrink: 0; }
-    .skill-actions { display: flex; gap: 3px; flex-shrink: 0; }
-    .skill-btn {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      color: var(--text-dim);
-      cursor: pointer;
-      font-size: 11px;
-      width: 18px; height: 18px;
-      display: flex; align-items: center; justify-content: center;
-      font-family: inherit;
-    }
-    .skill-btn:hover { border-color: var(--accent); color: var(--accent); }
-    .skill-btn.del { color: var(--red); border-color: transparent; }
-    .skill-btn.del:hover { border-color: var(--red); }
-
-    #add-skill-form { display: flex; gap: 4px; margin-top: 8px; }
-    #new-skill-name {
-      flex: 1;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 4px 6px;
-      font-family: inherit;
-      font-size: 12px;
-    }
-    #new-skill-name:focus { outline: none; border-color: var(--accent); }
-    #add-skill-btn {
-      background: var(--accent);
-      color: #000;
-      border: none;
-      padding: 4px 10px;
-      cursor: pointer;
-      font-family: inherit;
-      font-size: 12px;
-      font-weight: bold;
-    }
-    #add-skill-btn:hover { opacity: 0.85; }
-
-    /* ── Stats / Rides ── */
-    #panel-rides { grid-column: 2 / 3; }
-    #panel-goals { grid-column: 3 / 4; }
-
-    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px; }
-    .stat-box { background: var(--surface2); padding: 8px; border: 1px solid var(--border); }
-    .stat-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
-    .stat-value { font-size: 18px; font-weight: bold; color: #fff; margin-top: 2px; }
-    .stat-unit { font-size: 10px; color: var(--text-dim); }
-
-    .log-form { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
-    .log-row { display: flex; gap: 4px; }
-    .log-input {
-      flex: 1;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 4px 6px;
-      font-family: inherit;
-      font-size: 11px;
-    }
-    .log-input:focus { outline: none; border-color: var(--accent); }
-    .log-btn {
-      background: var(--accent);
-      color: #000;
-      border: none;
-      padding: 4px 10px;
-      cursor: pointer;
-      font-family: inherit;
-      font-size: 11px;
-      font-weight: bold;
-      white-space: nowrap;
-    }
-    .ride-history { margin-top: 8px; }
-    .ride-entry {
-      display: flex;
-      justify-content: space-between;
-      padding: 3px 0;
-      border-bottom: 1px solid var(--border);
-      font-size: 11px;
-    }
-    .ride-entry .r-date { color: var(--muted); }
-    .ride-entry .r-dist { color: var(--accent2); }
-    .ride-entry .r-time { color: var(--text-dim); }
-    .ride-del { background: none; border: none; color: var(--red); cursor: pointer; font-size: 10px; opacity: 0.6; }
-    .ride-del:hover { opacity: 1; }
-
-    /* ── Goals ── */
-    .goal-item { padding: 5px 0; border-bottom: 1px solid var(--border); }
-    .goal-item:last-child { border-bottom: none; }
-    .goal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; }
-    .goal-name { font-size: 12px; }
-    .goal-pct { font-size: 11px; color: #fff; }
-    .goal-bar-wrap { height: 4px; background: var(--border); }
-    .goal-bar { height: 100%; background: var(--accent2); transition: width 0.3s; }
-    .goal-sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
-    .goal-form { display: flex; gap: 4px; margin-top: 8px; flex-wrap: wrap; }
-    .goal-input {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 4px 6px;
-      font-family: inherit;
-      font-size: 11px;
-    }
-    .goal-input:focus { outline: none; border-color: var(--accent); }
-    #goal-label   { flex: 1; min-width: 80px; }
-    #goal-target  { width: 70px; }
-    #goal-unit    { width: 55px; }
-    #goal-current { width: 60px; }
-
-    /* ── Ticker ── */
-    #ticker-wrap {
-      border-top: 1px solid var(--border);
-      margin-top: 12px;
-      padding-top: 6px;
-      overflow: hidden;
-      white-space: nowrap;
-    }
-    #ticker { display: inline-block; animation: scroll-left 180s linear infinite; color: var(--text-dim); font-size: 12px; }
-    #ticker span.t-head { color: var(--muted); margin-right: 4px; }
-    @keyframes scroll-left {
-      0%   { transform: translateX(100vw); }
-      100% { transform: translateX(-100%); }
-    }
-
-    .loading { color: var(--muted); font-size: 12px; }
-    .error   { color: var(--red);   font-size: 12px; }
-
-    .scroll-inner { max-height: 260px; overflow-y: auto; }
-    .scroll-inner::-webkit-scrollbar { width: 4px; }
-    .scroll-inner::-webkit-scrollbar-track { background: var(--surface); }
-    .scroll-inner::-webkit-scrollbar-thumb { background: var(--border); }
+    .whoop-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; padding-top: 6px; border-top: 1px solid var(--border); }
 
     /* ── Weather ── */
     #panel-weather { grid-column: 1 / 4; }
-    .weather-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-    .wx-card {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      padding: 12px;
-      display: flex;
-      gap: 16px;
-      align-items: flex-start;
-    }
+    .weather-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .wx-card { background: var(--surface2); border: 1px solid var(--border); padding: 12px; display: flex; gap: 16px; align-items: flex-start; }
     .wx-main { flex: 0 0 auto; }
-    .wx-city { font-size: 11px; color: var(--text-dim); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 2px; }
+    .wx-city { font-size: 11px; color: var(--dim); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 2px; }
     .wx-temp { font-size: 48px; font-weight: bold; line-height: 1; color: #fff; }
-    .wx-temp sup { font-size: 20px; color: var(--text-dim); }
-    .wx-cond { font-size: 13px; color: var(--text-dim); margin-top: 4px; }
+    .wx-temp sup { font-size: 20px; color: var(--dim); }
+    .wx-cond { font-size: 13px; color: var(--dim); margin-top: 4px; }
     .wx-details { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 4px; padding-top: 4px; }
-    .wx-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 12px;
-      padding: 3px 0;
-      border-bottom: 1px solid var(--border);
-    }
+    .wx-row { display: flex; justify-content: space-between; font-size: 12px; padding: 3px 0; border-bottom: 1px solid var(--border); }
     .wx-row:last-child { border-bottom: none; }
     .wx-row .k { color: var(--muted); }
     .wx-row .v { color: #fff; }
 
+    /* ── News ── */
+    #panel-news  { grid-column: 1 / 3; }
+    #panel-news2 { grid-column: 3 / 4; }
+    .news-item { padding: 5px 0; border-bottom: 1px solid var(--border); line-height: 1.5; }
+    .news-item:last-child { border-bottom: none; }
+    .news-item a { color: #fff; text-decoration: none; display: block; font-size: 13px; }
+    .news-item a:hover { color: var(--blue); }
+    .news-item .meta { color: var(--muted); font-size: 11px; margin-top: 2px; }
+    .src-tag { display: inline-block; background: var(--surface2); color: var(--blue); font-size: 9px; padding: 1px 4px; margin-right: 4px; }
+
+    /* ── Ride Log ── */
+    #panel-rides { grid-column: 1 / 2; }
+    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px; }
+    .stat-box { background: var(--surface2); padding: 8px; border: 1px solid var(--border); }
+    .stat-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+    .stat-value { font-size: 18px; font-weight: bold; color: #fff; margin-top: 2px; }
+    .stat-unit { font-size: 10px; color: var(--dim); }
+    .ride-entry { display: flex; gap: 6px; align-items: center; padding: 4px 0; border-bottom: 1px solid var(--border); font-size: 11px; }
+    .ride-entry:last-child { border-bottom: none; }
+    .r-date { color: var(--muted); flex-shrink: 0; width: 52px; }
+    .r-dist { color: #fff; flex-shrink: 0; width: 44px; }
+    .r-time { color: var(--dim); flex-shrink: 0; width: 52px; }
+    .r-note { color: var(--dim); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* ── Running Log ── */
+    #panel-run { grid-column: 2 / 3; }
+
+    /* ── Quote ── */
+    #panel-quote { grid-column: 3 / 4; }
+    .quote-text { font-size: 14px; color: #fff; line-height: 1.7; font-style: italic; margin-bottom: 10px; }
+    .quote-attr { font-size: 11px; color: var(--muted); text-align: right; }
+    .quote-nav { display: flex; justify-content: flex-end; gap: 6px; margin-top: 10px; }
+
+    /* ── Weekly Plan ── */
+    #panel-plan { grid-column: 1 / 4; }
+    .plan-meta { font-size: 10px; color: var(--muted); margin-bottom: 8px; display: flex; justify-content: space-between; }
+    .plan-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--border); }
+    .plan-row:last-child { border-bottom: none; }
+    .plan-check { width: 15px; height: 15px; cursor: pointer; accent-color: var(--green); flex-shrink: 0; }
+    .plan-text { flex: 1; font-size: 13px; color: #fff; line-height: 1.4; }
+    .plan-row.done .plan-text { text-decoration: line-through; color: var(--muted); }
+    .plan-progress-bar { height: 3px; background: var(--border); margin: 8px 0; }
+    .plan-progress-fill { height: 100%; background: var(--green); transition: width 0.4s; }
+
+    /* ── Ticker ── */
+    #ticker-wrap { border-top: 1px solid var(--border); margin-top: 12px; padding-top: 6px; overflow: hidden; white-space: nowrap; }
+    #ticker { display: inline-block; animation: scroll-left 240s linear infinite; color: var(--dim); font-size: 14px; }
+    #ticker .dot { color: var(--muted); margin-right: 6px; }
+    @keyframes scroll-left { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
+
     @media (max-width: 900px) {
       #grid { grid-template-columns: 1fr 1fr; }
-      #panel-whoop    { grid-column: 1 / 3; }
-      #panel-weather  { grid-column: 1 / 3; }
-      #panel-news     { grid-column: 1 / 3; }
-      #panel-news2    { grid-column: 1 / 3; }
-      .whoop-metrics  { grid-template-columns: 1fr 1fr; }
-      .weather-grid   { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 600px) {
-      #grid { grid-template-columns: 1fr; }
-      #panel-whoop, #panel-news, #panel-news2 { grid-column: auto; }
+      #panel-whoop, #panel-weather, #panel-news, #panel-news2 { grid-column: 1 / 3; }
       .whoop-metrics { grid-template-columns: 1fr 1fr; }
+      .weather-grid { grid-template-columns: 1fr; }
+      #panel-rides { grid-column: auto; }
+      #panel-plan  { grid-column: 1 / 3; }
     }
   </style>
 </head>
@@ -405,15 +271,15 @@
     </div>
     <div id="whoop-body">
       <div id="whoop-connect-area">
-        <button id="whoop-connect-btn" onclick="whoopLogin()">&#9650; Connect WHOOP</button>
-        <div id="whoop-hint">Opens WHOOP login in this tab — you'll be redirected back automatically.</div>
+        <button id="whoop-connect-btn" onclick="whoopLogin()">Connect WHOOP</button>
+        <div id="whoop-hint">Opens WHOOP login — you'll be redirected back automatically.</div>
       </div>
     </div>
   </div>
 
   <!-- Weather -->
   <div class="panel" id="panel-weather">
-    <div class="panel-title">Weather <span class="badge" id="weather-badge">LIVE</span></div>
+    <div class="panel-title">Weather <span class="badge live" id="weather-badge">LIVE</span></div>
     <div class="weather-grid" id="weather-body">
       <div class="loading">Loading weather...</div>
     </div>
@@ -422,85 +288,91 @@
   <!-- World News -->
   <div class="panel" id="panel-news">
     <div class="panel-title">World News <span class="badge" id="news-count">...</span></div>
-    <div class="scroll-inner" id="news-list"><div class="loading">Loading headlines...</div></div>
+    <div class="scroll" id="news-list"><div class="loading">Loading headlines...</div></div>
   </div>
 
   <!-- Cycling News -->
   <div class="panel" id="panel-news2">
     <div class="panel-title">Cycling News <span class="badge" id="cycling-count">...</span></div>
-    <div class="scroll-inner" id="cycling-list"><div class="loading">Loading...</div></div>
-  </div>
-
-  <!-- Skill Tracker -->
-  <div class="panel" id="panel-skills">
-    <div class="panel-title">Skill Tracker</div>
-    <div id="skills-list"></div>
-    <form id="add-skill-form" onsubmit="addSkill(event)">
-      <input id="new-skill-name" type="text" placeholder="Add skill (e.g. Climbing)" maxlength="24" autocomplete="off">
-      <button id="add-skill-btn" type="submit">+</button>
-    </form>
+    <div class="scroll" id="cycling-list"><div class="loading">Loading...</div></div>
   </div>
 
   <!-- Ride Log -->
   <div class="panel" id="panel-rides">
     <div class="panel-title">Ride Log</div>
     <div class="stat-grid">
-      <div class="stat-box">
-        <div class="stat-label">Total Rides</div>
-        <div class="stat-value" id="stat-rides">0</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-label">Total Distance</div>
-        <div class="stat-value" id="stat-dist">0</div>
-        <div class="stat-unit">km</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-label">This Week</div>
-        <div class="stat-value" id="stat-week">0</div>
-        <div class="stat-unit">km</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-label">Longest Ride</div>
-        <div class="stat-value" id="stat-longest">0</div>
-        <div class="stat-unit">km</div>
-      </div>
+      <div class="stat-box"><div class="stat-label">Total Rides</div><div class="stat-value" id="stat-rides">0</div></div>
+      <div class="stat-box"><div class="stat-label">Total Distance</div><div class="stat-value" id="stat-dist">0</div><div class="stat-unit">mi</div></div>
+      <div class="stat-box"><div class="stat-label">This Week</div><div class="stat-value" id="stat-week">0</div><div class="stat-unit">mi</div></div>
+      <div class="stat-box"><div class="stat-label">Longest</div><div class="stat-value" id="stat-longest">0</div><div class="stat-unit">mi</div></div>
     </div>
-    <form class="log-form" onsubmit="logRide(event)">
-      <div class="log-row">
-        <input class="log-input" id="ride-dist" type="number" min="0" step="0.1" placeholder="km" style="width:70px">
-        <input class="log-input" id="ride-time" type="text" placeholder="duration (e.g. 1h30m)" style="flex:1">
-        <input class="log-input" id="ride-note" type="text" placeholder="note" style="flex:2">
-        <button class="log-btn" type="submit">Log</button>
-      </div>
+    <form onsubmit="logRide(event)" style="display:flex;gap:4px;margin-bottom:8px">
+      <input class="inp" id="ride-dist" type="number" min="0" step="0.1" placeholder="mi" style="width:56px">
+      <input class="inp" id="ride-time" type="text" placeholder="time" style="width:70px">
+      <input class="inp" id="ride-note" type="text" placeholder="note" style="flex:1">
+      <button class="btn-primary" type="submit">Log</button>
     </form>
-    <div class="ride-history scroll-inner" id="ride-history"></div>
+    <div class="scroll" id="ride-history"></div>
   </div>
 
-  <!-- Goals -->
-  <div class="panel" id="panel-goals">
-    <div class="panel-title">Goals</div>
-    <div id="goals-list"></div>
-    <form class="goal-form" onsubmit="addGoal(event)">
-      <input class="goal-input" id="goal-label" type="text" placeholder="Goal name" maxlength="22" autocomplete="off">
-      <input class="goal-input" id="goal-current" type="number" min="0" placeholder="now" step="any">
-      <input class="goal-input" id="goal-target" type="number" min="1" placeholder="target" step="any">
-      <input class="goal-input" id="goal-unit" type="text" placeholder="unit" maxlength="8">
-      <button class="log-btn" type="submit" style="width:100%">Add Goal</button>
+  <!-- Running Log -->
+  <div class="panel" id="panel-run">
+    <div class="panel-title">Running Log</div>
+    <div class="stat-grid">
+      <div class="stat-box"><div class="stat-label">Total Runs</div><div class="stat-value" id="run-total">0</div></div>
+      <div class="stat-box"><div class="stat-label">Total Distance</div><div class="stat-value" id="run-dist">0</div><div class="stat-unit">mi</div></div>
+      <div class="stat-box"><div class="stat-label">This Week</div><div class="stat-value" id="run-week">0</div><div class="stat-unit">mi</div></div>
+      <div class="stat-box"><div class="stat-label">Longest</div><div class="stat-value" id="run-longest">0</div><div class="stat-unit">mi</div></div>
+    </div>
+    <form onsubmit="logRun(event)" style="display:flex;gap:4px;margin-bottom:8px">
+      <input class="inp" id="run-dist-inp" type="number" min="0" step="0.01" placeholder="mi" style="width:56px">
+      <input class="inp" id="run-time-inp" type="text" placeholder="time" style="width:70px">
+      <input class="inp" id="run-note-inp" type="text" placeholder="note" style="flex:1">
+      <button class="btn-primary" type="submit">Log</button>
+    </form>
+    <div class="scroll" id="run-history"></div>
+  </div>
+
+  <!-- Quote -->
+  <div class="panel" id="panel-quote">
+    <div class="panel-title">Today's Thought</div>
+    <div class="quote-text" id="quote-text"></div>
+    <div class="quote-attr" id="quote-attr"></div>
+    <div class="quote-nav">
+      <button class="btn" onclick="prevQuote()">&#8592;</button>
+      <button class="btn" onclick="nextQuote()">&#8594;</button>
+    </div>
+  </div>
+
+  <!-- Weekly Plan -->
+  <div class="panel" id="panel-plan" style="grid-column: 1 / 4;">
+    <div class="panel-title">
+      Weekly Plan
+      <span id="plan-week-label" style="font-size:9px;color:var(--muted);text-transform:none;letter-spacing:0"></span>
+    </div>
+    <div class="plan-meta">
+      <span id="plan-summary">No goals yet</span>
+      <span id="plan-pct" style="color:var(--green)"></span>
+    </div>
+    <div class="plan-progress-bar"><div class="plan-progress-fill" id="plan-bar" style="width:0%"></div></div>
+    <div class="scroll" id="plan-list"></div>
+    <form onsubmit="addPlan(event)" style="display:flex;gap:4px;margin-top:8px">
+      <input class="inp" id="plan-input" type="text" placeholder="Add a goal for this week..." style="flex:1" autocomplete="off">
+      <button class="btn-primary" type="submit">Add</button>
     </form>
   </div>
 
 </div>
 
 <div id="ticker-wrap">
-  <div id="ticker">Loading news ticker...</div>
+  <div id="ticker">Loading...</div>
 </div>
 
 <script>
 // ── Clock ─────────────────────────────────────────────────────────────────
 function updateClock() {
   const now = new Date();
-  document.getElementById('clock').textContent =
-    now.toLocaleTimeString('en-US', { hour12: false });
+  document.getElementById('clock').textContent = now.toLocaleTimeString('en-US', { hour12: false });
   document.getElementById('date-display').textContent =
     now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 }
@@ -521,18 +393,16 @@ const CYCLING_FEEDS = [
 ];
 
 function timeAgo(dateStr) {
-  const diff = (Date.now() - new Date(dateStr)) / 1000;
-  if (diff < 60) return `${Math.floor(diff)}s ago`;
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-  return `${Math.floor(diff / 86400)}d ago`;
+  const s = (Date.now() - new Date(dateStr)) / 1000;
+  if (s < 60)    return `${Math.floor(s)}s ago`;
+  if (s < 3600)  return `${Math.floor(s/60)}m ago`;
+  if (s < 86400) return `${Math.floor(s/3600)}h ago`;
+  return `${Math.floor(s/86400)}d ago`;
 }
 
-async function loadFeed(feeds, listId, countId, maxItems) {
+async function loadFeed(feeds, listId, countId, max) {
   const container = document.getElementById(listId);
-  const countEl   = document.getElementById(countId);
   const all = [];
-
   const results = await Promise.all(
     feeds.map(f =>
       fetch(RSS2JSON + encodeURIComponent(f.url))
@@ -543,28 +413,20 @@ async function loadFeed(feeds, listId, countId, maxItems) {
   );
   results.forEach(a => all.push(...a));
   all.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
-
   container.innerHTML = '';
-  const shown = all.slice(0, maxItems);
-  countEl.textContent = shown.length;
-
-  if (!shown.length) {
-    container.innerHTML = '<div class="error">Could not load feeds.</div>';
-    return [];
-  }
-
+  const shown = all.slice(0, max);
+  document.getElementById(countId).textContent = shown.length;
+  if (!shown.length) { container.innerHTML = '<div class="error-msg">Could not load feeds.</div>'; return []; }
   shown.forEach(a => {
     const div = document.createElement('div');
     div.className = 'news-item';
     div.innerHTML = `<a href="${a.link}" target="_blank" rel="noopener"><span class="src-tag">${a._src}</span>${a.title}</a><div class="meta">${a.pubDate ? timeAgo(a.pubDate) : ''}</div>`;
     container.appendChild(div);
   });
-
   return shown.map(a => `[${a._src}] ${a.title}`);
 }
 
 let tickerTitles = [];
-
 async function loadAllNews() {
   const [w, c] = await Promise.all([
     loadFeed(NEWS_FEEDS,    'news-list',    'news-count',    18),
@@ -573,17 +435,58 @@ async function loadAllNews() {
   tickerTitles = [...w, ...c];
   updateTicker();
 }
-
 function updateTicker() {
   const el = document.getElementById('ticker');
   if (!tickerTitles.length) return;
-  el.innerHTML = tickerTitles
-    .map(t => `<span class="t-head">&#9679;</span>${t}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`)
-    .join('');
+  el.innerHTML = tickerTitles.map(t => `<span class="dot">&#9679;</span>${t}&nbsp;&nbsp;&nbsp;&nbsp;`).join('');
 }
-
 loadAllNews();
 setInterval(loadAllNews, 5 * 60 * 1000);
+
+// ── Weather ───────────────────────────────────────────────────────────────
+const WX_LOCATIONS = [
+  { name: 'Oxford, MS', lat: 34.3665, lon: -89.5193, tz: 'America/Chicago' },
+  { name: 'Dallas, TX', lat: 32.7767, lon: -96.7970, tz: 'America/Chicago' },
+];
+const WX_CODES = {
+  0:'Clear', 1:'Mostly Clear', 2:'Partly Cloudy', 3:'Overcast',
+  45:'Foggy', 48:'Icy Fog', 51:'Light Drizzle', 53:'Drizzle', 55:'Heavy Drizzle',
+  61:'Light Rain', 63:'Rain', 65:'Heavy Rain', 71:'Light Snow', 73:'Snow',
+  75:'Heavy Snow', 77:'Snow Grains', 80:'Light Showers', 81:'Showers',
+  82:'Heavy Showers', 85:'Snow Showers', 86:'Heavy Snow Showers',
+  95:'Thunderstorm', 96:'Thunderstorm + Hail', 99:'Severe Thunderstorm',
+};
+function windDir(d) { return ['N','NE','E','SE','S','SW','W','NW'][Math.round(d/45)%8]; }
+
+async function loadWeather() {
+  const container = document.getElementById('weather-body');
+  try {
+    const results = await Promise.all(WX_LOCATIONS.map(loc =>
+      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}` +
+        `&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m,precipitation` +
+        `&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=${loc.tz}`)
+        .then(r => r.json()).then(d => ({ loc, cur: d.current }))
+    ));
+    container.innerHTML = results.map(({ loc, cur }) => `
+      <div class="wx-card">
+        <div class="wx-main">
+          <div class="wx-city">${loc.name}</div>
+          <div class="wx-temp">${Math.round(cur.temperature_2m)}<sup>°F</sup></div>
+          <div class="wx-cond">${WX_CODES[cur.weather_code] ?? 'Unknown'}</div>
+        </div>
+        <div class="wx-details">
+          <div class="wx-row"><span class="k">Feels Like</span><span class="v">${Math.round(cur.apparent_temperature)}°F</span></div>
+          <div class="wx-row"><span class="k">Wind</span><span class="v">${Math.round(cur.wind_speed_10m)} mph ${windDir(cur.wind_direction_10m)}</span></div>
+          <div class="wx-row"><span class="k">Humidity</span><span class="v">${cur.relative_humidity_2m}%</span></div>
+          <div class="wx-row"><span class="k">Precip</span><span class="v">${cur.precipitation.toFixed(2)} in</span></div>
+        </div>
+      </div>`).join('');
+  } catch (e) {
+    container.innerHTML = `<div class="error-msg">Weather unavailable: ${e.message}</div>`;
+  }
+}
+loadWeather();
+setInterval(loadWeather, 10 * 60 * 1000);
 
 // ── WHOOP ─────────────────────────────────────────────────────────────────
 const W = {
@@ -595,22 +498,19 @@ const W = {
   API:           'https://api.prod.whoop.com/developer/v1',
   SCOPES:        'read:recovery read:sleep read:cycles read:workout read:profile read:body_measurement offline',
 };
-
 const SPORTS = {
-  0: 'Running', 1: 'Cycling', 16: 'Basketball', 22: 'Swimming',
-  46: 'Weights', 57: 'Football', 63: 'HIIT', 71: 'Spinning',
-  84: 'Yoga', 91: 'Tennis', 126: 'MTB', 127: 'Skiing', 128: 'Squash',
+  0:'Running', 1:'Cycling', 16:'Basketball', 22:'Swimming',
+  46:'Weights', 63:'HIIT', 71:'Spinning', 84:'Yoga', 91:'Tennis',
+  126:'MTB', 127:'Skiing', 128:'Squash',
 };
 
 function pkceVerifier() {
-  const arr = new Uint8Array(32);
-  crypto.getRandomValues(arr);
-  return btoa(String.fromCharCode(...arr)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+  const a = new Uint8Array(32); crypto.getRandomValues(a);
+  return btoa(String.fromCharCode(...a)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
 }
-
-async function pkceChallenge(verifier) {
-  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier));
-  return btoa(String.fromCharCode(...new Uint8Array(digest))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+async function pkceChallenge(v) {
+  const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(v));
+  return btoa(String.fromCharCode(...new Uint8Array(d))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
 }
 
 async function whoopLogin() {
@@ -619,31 +519,25 @@ async function whoopLogin() {
   const state = Math.random().toString(36).slice(2);
   localStorage.setItem('whoop_verifier', verifier);
   localStorage.setItem('whoop_state', state);
-  const url = W.AUTH_URL + '?' + new URLSearchParams({
-    client_id:             W.CLIENT_ID,
-    redirect_uri:          W.REDIRECT_URI,
-    response_type:         'code',
-    scope:                 W.SCOPES,
-    state,
-    code_challenge:        challenge,
-    code_challenge_method: 'S256',
+  window.location.href = W.AUTH_URL + '?' + new URLSearchParams({
+    client_id: W.CLIENT_ID, redirect_uri: W.REDIRECT_URI,
+    response_type: 'code', scope: W.SCOPES, state,
+    code_challenge: challenge, code_challenge_method: 'S256',
   });
-  window.location.href = url;
 }
 
 function whoopLogout() {
-  ['whoop_tokens', 'whoop_token_expiry'].forEach(k => localStorage.removeItem(k));
+  ['whoop_tokens','whoop_token_expiry'].forEach(k => localStorage.removeItem(k));
   renderWhoopDisconnected();
 }
 
-async function whoopRefreshToken(tokens) {
+async function whoopRefresh(tokens) {
   const res = await fetch('https://corsproxy.io/?' + W.TOKEN_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({
-      client_id:     W.CLIENT_ID,
-      refresh_token: tokens.refresh_token,
-      grant_type:    'refresh_token',
+      client_id: W.CLIENT_ID, client_secret: W.CLIENT_SECRET,
+      refresh_token: tokens.refresh_token, grant_type: 'refresh_token',
     }),
   });
   const data = await res.json();
@@ -657,145 +551,105 @@ async function whoopToken() {
   const tokens = JSON.parse(localStorage.getItem('whoop_tokens') || 'null');
   if (!tokens) return null;
   const expiry = parseInt(localStorage.getItem('whoop_token_expiry') || '0');
-  if (Date.now() > expiry - 120000) {
-    return whoopRefreshToken(tokens).catch(() => null);
-  }
+  if (Date.now() > expiry - 120000) return whoopRefresh(tokens).catch(() => null);
   return tokens.access_token;
 }
 
 async function whoopGet(path) {
   const token = await whoopToken();
   if (!token) return null;
-  const res = await fetch(W.API + path, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  if (!res.ok) throw new Error(`${res.status} ${path}`);
+  const res = await fetch(W.API + path, { headers: { Authorization: `Bearer ${token}` } });
+  if (!res.ok) throw new Error(`${res.status}`);
   return res.json();
 }
 
 function msToHM(ms) {
-  const h = Math.floor(ms / 3600000);
-  const m = Math.floor((ms % 3600000) / 60000);
+  const h = Math.floor(ms/3600000), m = Math.floor((ms%3600000)/60000);
   return h > 0 ? `${h}h ${m}m` : `${m}m`;
 }
-
-function kjToKcal(kj) {
-  return Math.round(kj / 4.184);
-}
-
-function recoveryClass(score) {
-  if (score >= 67) return 'c-green';
-  if (score >= 34) return 'c-yellow';
-  return 'c-red';
-}
-
-function strainClass(s) {
-  if (s >= 18) return 'c-red';
-  if (s >= 14) return 'c-yellow';
-  if (s >= 10) return 'c-green';
-  return 'c-blue';
-}
+function kjToKcal(kj) { return Math.round(kj/4.184); }
+function recClass(s) { return s >= 67 ? 'c-green' : s >= 34 ? 'c-orange' : 'c-red'; }
+function strainClass(s) { return s >= 18 ? 'c-red' : s >= 14 ? 'c-orange' : s >= 10 ? 'c-green' : 'c-blue'; }
 
 function renderWhoopDisconnected() {
   document.getElementById('whoop-badge').textContent = 'NOT CONNECTED';
   document.getElementById('whoop-badge').className = 'badge';
   document.getElementById('whoop-body').innerHTML = `
     <div id="whoop-connect-area">
-      <button id="whoop-connect-btn" onclick="whoopLogin()">&#9650; Connect WHOOP</button>
-      <div id="whoop-hint">Opens WHOOP login in this tab — you'll be redirected back automatically.</div>
+      <button id="whoop-connect-btn" onclick="whoopLogin()">Connect WHOOP</button>
+      <div id="whoop-hint">Opens WHOOP login — you'll be redirected back automatically.</div>
     </div>`;
 }
 
 function renderWhoopData(recovery, sleep, cycle, workouts) {
   const badge = document.getElementById('whoop-badge');
-  badge.textContent = 'LIVE';
-  badge.className = 'badge connected';
-
-  const syncEl = document.getElementById('whoop-sync-time');
-  syncEl.textContent = 'synced ' + timeAgo(new Date().toISOString());
+  badge.textContent = 'LIVE'; badge.className = 'badge live';
+  document.getElementById('whoop-sync-time').textContent = 'synced just now';
 
   const rec = recovery?.records?.[0];
   const slp = sleep?.records?.find(r => !r.nap);
   const cyc = cycle?.records?.[0];
-  const wos = workouts?.records?.slice(0, 5) || [];
+  const wos = workouts?.records?.slice(0,5) || [];
 
-  const recScore   = rec?.score?.recovery_score;
-  const hrv        = rec?.score?.hrv_rmssd_milli;
-  const rhr        = rec?.score?.resting_heart_rate;
-  const sleepPerf  = slp?.score?.sleep_performance_percentage;
-  const sleepDur   = slp?.score?.stage_summary?.total_in_bed_time_milli;
-  const remMs      = slp?.score?.stage_summary?.total_rem_sleep_time_milli;
-  const swsMs      = slp?.score?.stage_summary?.total_slow_wave_sleep_time_milli;
-  const strain     = cyc?.score?.strain;
-  const kcal       = cyc?.score?.kilojoule ? kjToKcal(cyc.score.kilojoule) : null;
-  const avgHR      = cyc?.score?.average_heart_rate;
-  const maxHR      = cyc?.score?.max_heart_rate;
+  const recScore  = rec?.score?.recovery_score;
+  const hrv       = rec?.score?.hrv_rmssd_milli;
+  const rhr       = rec?.score?.resting_heart_rate;
+  const sleepPerf = slp?.score?.sleep_performance_percentage;
+  const sleepDur  = slp?.score?.stage_summary?.total_in_bed_time_milli;
+  const remMs     = slp?.score?.stage_summary?.total_rem_sleep_time_milli;
+  const swsMs     = slp?.score?.stage_summary?.total_slow_wave_sleep_time_milli;
+  const strain    = cyc?.score?.strain;
+  const kcal      = cyc?.score?.kilojoule ? kjToKcal(cyc.score.kilojoule) : null;
+  const avgHR     = cyc?.score?.average_heart_rate;
+  const maxHR     = cyc?.score?.max_heart_rate;
 
   const recHtml = rec?.score_state === 'SCORED' && recScore != null ? `
-    <div class="whoop-big ${recoveryClass(recScore)}">${Math.round(recScore)}<span style="font-size:14px;color:var(--text-dim)">%</span></div>
-    <div class="whoop-row"><span class="k">HRV</span><span class="v">${hrv != null ? Math.round(hrv) + ' ms' : '—'}</span></div>
+    <div class="whoop-big ${recClass(recScore)}">${Math.round(recScore)}<span style="font-size:14px;color:var(--dim)">%</span></div>
+    <div class="whoop-row"><span class="k">HRV</span><span class="v">${hrv != null ? Math.round(hrv)+' ms' : '—'}</span></div>
     <div class="whoop-row"><span class="k">Resting HR</span><span class="v">${rhr ?? '—'} bpm</span></div>
-    <div class="whoop-row"><span class="k">SpO₂</span><span class="v">${rec.score.spo2_percentage != null ? rec.score.spo2_percentage.toFixed(1) + '%' : '—'}</span></div>
-  ` : `<div class="loading">Calibrating or no data</div>`;
+    <div class="whoop-row"><span class="k">SpO₂</span><span class="v">${rec.score.spo2_percentage?.toFixed(1) ?? '—'}%</span></div>
+  ` : '<div class="loading">Calibrating or no data</div>';
 
   const sleepHtml = slp?.score_state === 'SCORED' && sleepPerf != null ? `
-    <div class="whoop-big c-purple">${Math.round(sleepPerf)}<span style="font-size:14px;color:var(--text-dim)">%</span></div>
+    <div class="whoop-big c-purple">${Math.round(sleepPerf)}<span style="font-size:14px;color:var(--dim)">%</span></div>
     <div class="whoop-row"><span class="k">Duration</span><span class="v">${sleepDur ? msToHM(sleepDur) : '—'}</span></div>
     <div class="whoop-row"><span class="k">REM</span><span class="v">${remMs ? msToHM(remMs) : '—'}</span></div>
-    <div class="whoop-row"><span class="k">Deep (SWS)</span><span class="v">${swsMs ? msToHM(swsMs) : '—'}</span></div>
-  ` : `<div class="loading">No sleep data</div>`;
+    <div class="whoop-row"><span class="k">Deep</span><span class="v">${swsMs ? msToHM(swsMs) : '—'}</span></div>
+  ` : '<div class="loading">No sleep data</div>';
 
   const strainHtml = cyc?.score_state === 'SCORED' && strain != null ? `
     <div class="whoop-big ${strainClass(strain)}">${strain.toFixed(1)}</div>
-    <div class="whoop-row"><span class="k">Calories</span><span class="v">${kcal != null ? kcal.toLocaleString() + ' kcal' : '—'}</span></div>
+    <div class="whoop-row"><span class="k">Calories</span><span class="v">${kcal != null ? kcal.toLocaleString()+' kcal' : '—'}</span></div>
     <div class="whoop-row"><span class="k">Avg HR</span><span class="v">${avgHR ?? '—'} bpm</span></div>
     <div class="whoop-row"><span class="k">Max HR</span><span class="v">${maxHR ?? '—'} bpm</span></div>
-  ` : `<div class="loading">No strain data</div>`;
+  ` : '<div class="loading">No strain data</div>';
 
-  const woHtml = wos.length ? wos.map(w => {
-    const sport = SPORTS[w.sport_id] || `Sport ${w.sport_id}`;
-    const dur   = w.start && w.end ? msToHM(new Date(w.end) - new Date(w.start)) : '—';
-    const s     = w.score?.strain?.toFixed(1) ?? '—';
-    const d     = w.start ? new Date(w.start).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
-    return `<div class="whoop-workout">
-      <span class="wo-sport">${sport}</span>
-      <span class="wo-strain">${s}</span>
-      <span class="wo-dur">${dur}</span>
-      <span class="wo-date">${d}</span>
-    </div>`;
+  const woHtml = wos.length ? wos.map(wo => {
+    const sport = SPORTS[wo.sport_id] ?? `Sport ${wo.sport_id}`;
+    const dur   = wo.start && wo.end ? msToHM(new Date(wo.end)-new Date(wo.start)) : '—';
+    const s     = wo.score?.strain?.toFixed(1) ?? '—';
+    const d     = wo.start ? new Date(wo.start).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '';
+    return `<div class="whoop-workout"><span class="wo-sport">${sport}</span><span class="wo-strain">${s}</span><span class="wo-dur">${dur}</span><span class="wo-date">${d}</span></div>`;
   }).join('') : '<div class="loading">No recent workouts</div>';
 
   document.getElementById('whoop-body').innerHTML = `
     <div class="whoop-metrics">
-      <div class="whoop-card">
-        <div class="whoop-card-title">Recovery</div>
-        ${recHtml}
-      </div>
-      <div class="whoop-card">
-        <div class="whoop-card-title">Sleep</div>
-        ${sleepHtml}
-      </div>
-      <div class="whoop-card">
-        <div class="whoop-card-title">Day Strain</div>
-        ${strainHtml}
-      </div>
-      <div class="whoop-card">
-        <div class="whoop-card-title">Recent Workouts</div>
-        ${woHtml}
-      </div>
+      <div class="whoop-card"><div class="whoop-card-title">Recovery</div>${recHtml}</div>
+      <div class="whoop-card"><div class="whoop-card-title">Sleep</div>${sleepHtml}</div>
+      <div class="whoop-card"><div class="whoop-card-title">Day Strain</div>${strainHtml}</div>
+      <div class="whoop-card"><div class="whoop-card-title">Recent Workouts</div>${woHtml}</div>
     </div>
     <div class="whoop-footer">
-      <button onclick="loadWhoopData()">&#8635; Refresh</button>
-      <button class="danger" onclick="whoopLogout()">Disconnect</button>
+      <button class="btn" onclick="loadWhoopData()">&#8635; Refresh</button>
+      <button class="btn" onclick="whoopLogout()" style="border-color:var(--red-dark);color:var(--red)">Disconnect</button>
     </div>`;
 }
 
 async function loadWhoopData() {
   const token = await whoopToken();
   if (!token) { renderWhoopDisconnected(); return; }
-
   document.getElementById('whoop-badge').textContent = 'LOADING...';
-
+  document.getElementById('whoop-badge').className = 'badge';
   try {
     const [recovery, sleep, cycle, workouts] = await Promise.all([
       whoopGet('/recovery?limit=1'),
@@ -806,153 +660,26 @@ async function loadWhoopData() {
     renderWhoopData(recovery, sleep, cycle, workouts);
   } catch (e) {
     const badge = document.getElementById('whoop-badge');
-    badge.textContent = 'ERROR';
-    badge.className = 'badge error';
+    badge.textContent = 'ERROR'; badge.className = 'badge err';
     document.getElementById('whoop-body').innerHTML =
-      `<div class="error">Failed to load WHOOP data: ${e.message}</div>
-       <div class="whoop-footer"><button onclick="loadWhoopData()">&#8635; Retry</button><button class="danger" onclick="whoopLogout()">Disconnect</button></div>`;
+      `<div class="error-msg">Failed to load WHOOP data: ${e.message}</div>
+       <div class="whoop-footer"><button class="btn" onclick="loadWhoopData()">&#8635; Retry</button><button class="btn" onclick="whoopLogout()" style="color:var(--red)">Disconnect</button></div>`;
   }
 }
 
-// On page load, check for stored tokens and load data
 (async () => {
-  const tokens = localStorage.getItem('whoop_tokens');
-  if (tokens) {
+  if (localStorage.getItem('whoop_tokens')) {
     await loadWhoopData();
     setInterval(loadWhoopData, 15 * 60 * 1000);
   }
 })();
-
-// ── Weather ───────────────────────────────────────────────────────────────
-const WX_LOCATIONS = [
-  { name: 'Oxford, MS',  lat: 34.3665, lon: -89.5193, tz: 'America/Chicago'  },
-  { name: 'Dallas, TX',  lat: 32.7767, lon: -96.7970, tz: 'America/Chicago'  },
-];
-
-const WX_CODES = {
-  0:'Clear', 1:'Mostly Clear', 2:'Partly Cloudy', 3:'Overcast',
-  45:'Foggy', 48:'Icy Fog',
-  51:'Light Drizzle', 53:'Drizzle', 55:'Heavy Drizzle',
-  61:'Light Rain', 63:'Rain', 65:'Heavy Rain',
-  71:'Light Snow', 73:'Snow', 75:'Heavy Snow', 77:'Snow Grains',
-  80:'Light Showers', 81:'Showers', 82:'Heavy Showers',
-  85:'Snow Showers', 86:'Heavy Snow Showers',
-  95:'Thunderstorm', 96:'Thunderstorm + Hail', 99:'Severe Thunderstorm',
-};
-
-function windDir(deg) {
-  return ['N','NE','E','SE','S','SW','W','NW'][Math.round(deg / 45) % 8];
-}
-
-async function loadWeather() {
-  const container = document.getElementById('weather-body');
-  try {
-    const results = await Promise.all(WX_LOCATIONS.map(loc =>
-      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}` +
-        `&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m,precipitation` +
-        `&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=${loc.tz}`)
-        .then(r => r.json())
-        .then(d => ({ loc, cur: d.current }))
-    ));
-
-    container.innerHTML = results.map(({ loc, cur }) => {
-      const temp    = Math.round(cur.temperature_2m);
-      const feels   = Math.round(cur.apparent_temperature);
-      const cond    = WX_CODES[cur.weather_code] ?? `Code ${cur.weather_code}`;
-      const wind    = `${Math.round(cur.wind_speed_10m)} mph ${windDir(cur.wind_direction_10m)}`;
-      const humid   = `${cur.relative_humidity_2m}%`;
-      const precip  = `${cur.precipitation.toFixed(2)} in`;
-      return `
-        <div class="wx-card">
-          <div class="wx-main">
-            <div class="wx-city">${loc.name}</div>
-            <div class="wx-temp">${temp}<sup>°F</sup></div>
-            <div class="wx-cond">${cond}</div>
-          </div>
-          <div class="wx-details">
-            <div class="wx-row"><span class="k">Feels Like</span><span class="v">${feels}°F</span></div>
-            <div class="wx-row"><span class="k">Wind</span><span class="v">${wind}</span></div>
-            <div class="wx-row"><span class="k">Humidity</span><span class="v">${humid}</span></div>
-            <div class="wx-row"><span class="k">Precip</span><span class="v">${precip}</span></div>
-          </div>
-        </div>`;
-    }).join('');
-  } catch (e) {
-    container.innerHTML = `<div class="error">Weather unavailable: ${e.message}</div>`;
-  }
-}
-
-loadWeather();
-setInterval(loadWeather, 10 * 60 * 1000);
-
-// ── Skill Tracker ─────────────────────────────────────────────────────────
-function loadSkills() { return JSON.parse(localStorage.getItem('cycling_skills') || '[]'); }
-function saveSkills(s) { localStorage.setItem('cycling_skills', JSON.stringify(s)); }
-
-function renderSkills() {
-  const skills = loadSkills();
-  const container = document.getElementById('skills-list');
-  container.innerHTML = '';
-  if (!skills.length) {
-    container.innerHTML = '<div class="loading">No skills yet. Add one below.</div>';
-    return;
-  }
-  skills.forEach((s, i) => {
-    const pct = Math.round((s.score / 10) * 100);
-    const row = document.createElement('div');
-    row.className = 'skill-row';
-    row.innerHTML = `
-      <span class="skill-name" title="${s.name}">${s.name}</span>
-      <div class="skill-bar-wrap"><div class="skill-bar" style="width:${pct}%"></div></div>
-      <span class="skill-score">${s.score}</span>
-      <div class="skill-actions">
-        <button class="skill-btn" onclick="adjustSkill(${i},-1)">−</button>
-        <button class="skill-btn" onclick="adjustSkill(${i},1)">+</button>
-        <button class="skill-btn del" onclick="deleteSkill(${i})">✕</button>
-      </div>`;
-    container.appendChild(row);
-  });
-}
-
-function addSkill(e) {
-  e.preventDefault();
-  const input = document.getElementById('new-skill-name');
-  const name = input.value.trim();
-  if (!name) return;
-  const skills = loadSkills();
-  if (skills.find(s => s.name.toLowerCase() === name.toLowerCase())) {
-    input.style.borderColor = 'var(--red)';
-    setTimeout(() => input.style.borderColor = '', 800);
-    return;
-  }
-  skills.push({ name, score: 5 });
-  saveSkills(skills);
-  input.value = '';
-  renderSkills();
-}
-
-function adjustSkill(i, d) {
-  const skills = loadSkills();
-  skills[i].score = Math.max(0, Math.min(10, skills[i].score + d));
-  saveSkills(skills);
-  renderSkills();
-}
-
-function deleteSkill(i) {
-  const skills = loadSkills();
-  skills.splice(i, 1);
-  saveSkills(skills);
-  renderSkills();
-}
-
-renderSkills();
 
 // ── Ride Log ──────────────────────────────────────────────────────────────
 function loadRides() { return JSON.parse(localStorage.getItem('cycling_rides') || '[]'); }
 function saveRides(r) { localStorage.setItem('cycling_rides', JSON.stringify(r)); }
 
 function startOfWeek() {
-  const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() - d.getDay()); return d;
+  const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()-d.getDay()); return d;
 }
 
 function renderRides() {
@@ -971,18 +698,18 @@ function renderRides() {
 
   const hist = document.getElementById('ride-history');
   hist.innerHTML = '';
-  rides.slice().reverse().slice(0, 10).forEach((r, ri) => {
+  rides.slice().reverse().slice(0,10).forEach((r, ri) => {
     const i = rides.length - 1 - ri;
     const d = new Date(r.date);
-    const entry = document.createElement('div');
-    entry.className = 'ride-entry';
-    entry.innerHTML = `
+    const row = document.createElement('div');
+    row.className = 'ride-entry';
+    row.innerHTML = `
       <span class="r-date">${d.toLocaleDateString('en-US',{month:'short',day:'numeric'})}</span>
-      <span class="r-dist">${r.dist} km</span>
-      <span class="r-time">${r.time || '—'}</span>
-      <span style="color:var(--text-dim);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-left:6px">${r.note||''}</span>
-      <button class="ride-del" onclick="deleteRide(${i})">✕</button>`;
-    hist.appendChild(entry);
+      <span class="r-dist">${r.dist} mi</span>
+      <span class="r-time">${r.time||'—'}</span>
+      <span class="r-note">${r.note||''}</span>
+      <button class="btn-icon" onclick="deleteRide(${i})">✕</button>`;
+    hist.appendChild(row);
   });
 }
 
@@ -991,93 +718,164 @@ function logRide(e) {
   const dist = parseFloat(document.getElementById('ride-dist').value);
   if (!dist || dist <= 0) return;
   const rides = loadRides();
-  rides.push({
-    dist,
-    time: document.getElementById('ride-time').value.trim(),
-    note: document.getElementById('ride-note').value.trim(),
-    date: new Date().toISOString(),
-  });
+  rides.push({ dist, time: document.getElementById('ride-time').value.trim(), note: document.getElementById('ride-note').value.trim(), date: new Date().toISOString() });
   saveRides(rides);
-  document.getElementById('ride-dist').value = '';
-  document.getElementById('ride-time').value = '';
-  document.getElementById('ride-note').value = '';
+  ['ride-dist','ride-time','ride-note'].forEach(id => document.getElementById(id).value = '');
   renderRides();
 }
 
 function deleteRide(i) {
-  const rides = loadRides();
-  rides.splice(i, 1);
-  saveRides(rides);
-  renderRides();
+  const rides = loadRides(); rides.splice(i,1); saveRides(rides); renderRides();
 }
-
 renderRides();
 
-// ── Goals ─────────────────────────────────────────────────────────────────
-function loadGoals() { return JSON.parse(localStorage.getItem('cycling_goals') || '[]'); }
-function saveGoals(g) { localStorage.setItem('cycling_goals', JSON.stringify(g)); }
+// ── Running Log ───────────────────────────────────────────────────────────
+function loadRuns() { return JSON.parse(localStorage.getItem('running_log') || '[]'); }
+function saveRuns(r) { localStorage.setItem('running_log', JSON.stringify(r)); }
 
-function renderGoals() {
-  const goals = loadGoals();
-  const container = document.getElementById('goals-list');
-  container.innerHTML = '';
-  if (!goals.length) {
-    container.innerHTML = '<div class="loading">No goals yet.</div>';
-    return;
-  }
-  goals.forEach((g, i) => {
-    const pct = Math.min(100, Math.round((g.current / g.target) * 100));
-    const div = document.createElement('div');
-    div.className = 'goal-item';
-    div.innerHTML = `
-      <div class="goal-header">
-        <span class="goal-name">${g.label}</span>
-        <div style="display:flex;gap:6px;align-items:center">
-          <span class="goal-pct">${pct}%</span>
-          <button class="skill-btn del" onclick="deleteGoal(${i})" style="width:16px;height:16px;font-size:9px">✕</button>
-        </div>
-      </div>
-      <div class="goal-bar-wrap"><div class="goal-bar" style="width:${pct}%"></div></div>
-      <div class="goal-sub">${g.current} / ${g.target} ${g.unit||''}</div>
-      <div style="display:flex;gap:4px;margin-top:4px">
-        <input class="log-input" type="number" placeholder="new value" id="goal-upd-${i}" style="width:80px;font-size:10px;padding:2px 4px">
-        <button class="log-btn" onclick="updateGoalProgress(${i})" style="font-size:10px;padding:2px 8px">Set</button>
-      </div>`;
-    container.appendChild(div);
+function renderRuns() {
+  const runs = loadRuns();
+  const week = startOfWeek();
+  let total = 0, weekDist = 0, longest = 0;
+  runs.forEach(r => {
+    total += r.dist;
+    if (new Date(r.date) >= week) weekDist += r.dist;
+    if (r.dist > longest) longest = r.dist;
+  });
+  document.getElementById('run-total').textContent   = runs.length;
+  document.getElementById('run-dist').textContent    = total.toFixed(1);
+  document.getElementById('run-week').textContent    = weekDist.toFixed(1);
+  document.getElementById('run-longest').textContent = longest.toFixed(1);
+
+  const hist = document.getElementById('run-history');
+  hist.innerHTML = '';
+  runs.slice().reverse().slice(0,8).forEach((r, ri) => {
+    const i = runs.length - 1 - ri;
+    const d = new Date(r.date);
+    const row = document.createElement('div');
+    row.className = 'ride-entry';
+    row.innerHTML = `
+      <span class="r-date">${d.toLocaleDateString('en-US',{month:'short',day:'numeric'})}</span>
+      <span class="r-dist">${r.dist} mi</span>
+      <span class="r-time">${r.time||'—'}</span>
+      <span class="r-note">${r.note||''}</span>
+      <button class="btn-icon" onclick="deleteRun(${i})">✕</button>`;
+    hist.appendChild(row);
   });
 }
 
-function addGoal(e) {
+function logRun(e) {
   e.preventDefault();
-  const label   = document.getElementById('goal-label').value.trim();
-  const target  = parseFloat(document.getElementById('goal-target').value);
-  const current = parseFloat(document.getElementById('goal-current').value) || 0;
-  const unit    = document.getElementById('goal-unit').value.trim();
-  if (!label || !target) return;
-  const goals = loadGoals();
-  goals.push({ label, target, current, unit });
-  saveGoals(goals);
-  ['goal-label','goal-target','goal-current','goal-unit'].forEach(id => document.getElementById(id).value = '');
-  renderGoals();
+  const dist = parseFloat(document.getElementById('run-dist-inp').value);
+  if (!dist || dist <= 0) return;
+  const runs = loadRuns();
+  runs.push({ dist, time: document.getElementById('run-time-inp').value.trim(), note: document.getElementById('run-note-inp').value.trim(), date: new Date().toISOString() });
+  saveRuns(runs);
+  ['run-dist-inp','run-time-inp','run-note-inp'].forEach(id => document.getElementById(id).value = '');
+  renderRuns();
 }
 
-function updateGoalProgress(i) {
-  const val = parseFloat(document.getElementById(`goal-upd-${i}`).value);
-  if (isNaN(val)) return;
-  const goals = loadGoals();
-  goals[i].current = Math.max(0, val);
-  saveGoals(goals);
-  renderGoals();
+function deleteRun(i) {
+  const runs = loadRuns(); runs.splice(i,1); saveRuns(runs); renderRuns();
+}
+renderRuns();
+
+// ── Quotes ────────────────────────────────────────────────────────────────
+const QUOTES = [
+  { text: "Until death, all defeat is psychological.", attr: "— Unknown" },
+  { text: "The only way to make sense out of change is to plunge into it, move with it, and join the dance.", attr: "— Alan Watts" },
+  { text: "You are an aperture through which the universe is looking at and exploring itself.", attr: "— Alan Watts" },
+  { text: "No one is more dangerously insane than one who is sane all the time: he is like a steel bridge with no give in it.", attr: "— Alan Watts" },
+  { text: "The meaning of life is just to be alive. It is so plain and so obvious and so simple. And yet, everybody rushes around in a great panic as if it were necessary to achieve something beyond themselves.", attr: "— Alan Watts" },
+  { text: "Muddy water is best cleared by leaving it alone.", attr: "— Alan Watts" },
+  { text: "Problems that remain persistently insoluble should always be suspected as questions asked in the wrong way.", attr: "— Alan Watts" },
+  { text: "The art of living... is neither careless drifting on the one hand nor fearful clinging on the other. It consists in being sensitive to each moment, in regarding it as utterly new and unique.", attr: "— Alan Watts" },
+  { text: "Running is nothing more than a series of arguments between the part of your brain that wants to stop and the part that wants to keep going.", attr: "— Unknown" },
+  { text: "What you resist, persists. What you look at disappears.", attr: "— Alan Watts" },
+  { text: "The more a thing tends to be permanent, the more it tends to be lifeless.", attr: "— Alan Watts" },
+  { text: "You didn't come into this world. You came out of it, like a wave from the ocean.", attr: "— Alan Watts" },
+  { text: "Suffer the pain of discipline or suffer the pain of regret.", attr: "— Unknown" },
+  { text: "To have faith is to trust yourself to the water. When you swim you don't grab hold of the water, because if you do you will sink and drown.", attr: "— Alan Watts" },
+  { text: "Man suffers only because he takes seriously what the gods made for fun.", attr: "— Alan Watts" },
+];
+
+let quoteIdx = parseInt(localStorage.getItem('quote_idx') || '0') % QUOTES.length;
+
+function showQuote(i) {
+  quoteIdx = ((i % QUOTES.length) + QUOTES.length) % QUOTES.length;
+  localStorage.setItem('quote_idx', quoteIdx);
+  document.getElementById('quote-text').textContent = QUOTES[quoteIdx].text;
+  document.getElementById('quote-attr').textContent = QUOTES[quoteIdx].attr;
+}
+function nextQuote() { showQuote(quoteIdx + 1); }
+function prevQuote() { showQuote(quoteIdx - 1); }
+
+showQuote(quoteIdx);
+
+// ── Weekly Plan ───────────────────────────────────────────────────────────
+function weekKey() {
+  const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()-d.getDay());
+  return d.toISOString().slice(0,10);
 }
 
-function deleteGoal(i) {
-  const goals = loadGoals();
-  goals.splice(i, 1);
-  saveGoals(goals);
-  renderGoals();
+function loadPlan() {
+  const saved = JSON.parse(localStorage.getItem('week_plan') || '{}');
+  if (saved.week !== weekKey()) return { week: weekKey(), items: [] };
+  return saved;
 }
 
-renderGoals();
+function savePlan(p) { localStorage.setItem('week_plan', JSON.stringify(p)); }
+
+function renderPlan() {
+  const plan = loadPlan();
+  const done = plan.items.filter(i => i.done).length;
+  const total = plan.items.length;
+  const pct = total ? Math.round((done/total)*100) : 0;
+
+  const d = new Date(); d.setDate(d.getDate()-d.getDay());
+  const weekStart = d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  document.getElementById('plan-week-label').textContent = `Week of ${weekStart}`;
+  document.getElementById('plan-summary').textContent = total ? `${done} of ${total} complete` : 'No goals set yet';
+  document.getElementById('plan-pct').textContent = total ? `${pct}%` : '';
+  document.getElementById('plan-bar').style.width = `${pct}%`;
+
+  const list = document.getElementById('plan-list');
+  list.innerHTML = '';
+  if (!plan.items.length) {
+    list.innerHTML = '<div class="loading">Add your goals for the week below</div>';
+    return;
+  }
+  plan.items.forEach((item, i) => {
+    const row = document.createElement('div');
+    row.className = 'plan-row' + (item.done ? ' done' : '');
+    row.innerHTML = `
+      <input type="checkbox" class="plan-check" ${item.done?'checked':''} onchange="togglePlan(${i})">
+      <span class="plan-text">${item.text}</span>
+      <button class="btn-icon" onclick="deletePlan(${i})">✕</button>`;
+    list.appendChild(row);
+  });
+}
+
+function addPlan(e) {
+  e.preventDefault();
+  const input = document.getElementById('plan-input');
+  const text = input.value.trim();
+  if (!text) return;
+  const plan = loadPlan();
+  plan.items.push({ text, done: false });
+  savePlan(plan);
+  input.value = '';
+  renderPlan();
+}
+
+function togglePlan(i) {
+  const plan = loadPlan(); plan.items[i].done = !plan.items[i].done; savePlan(plan); renderPlan();
+}
+
+function deletePlan(i) {
+  const plan = loadPlan(); plan.items.splice(i,1); savePlan(plan); renderPlan();
+}
+renderPlan();
 </script>
 </body>
 </html>
