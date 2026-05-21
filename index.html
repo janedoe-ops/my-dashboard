@@ -3,83 +3,687 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Live Dashboard</title>
+  <title>Dashboard</title>
   <style>
-    body {
-      font-family: Arial, sans‑serif;
-      background: white;
-      color: black;
-      padding: 20px;
-      max-width: 800px;
-      margin: auto;
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0d0d;
+      --surface: #161616;
+      --surface2: #1f1f1f;
+      --border: #2a2a2a;
+      --accent: #e8ff47;
+      --accent2: #47c8ff;
+      --red: #ff4747;
+      --green: #47ff8a;
+      --muted: #555;
+      --text: #e0e0e0;
+      --text-dim: #888;
     }
-    h1, h2 { margin: 10px 0; }
-    .section { margin: 20px 0; }
-    .item { margin: 5px 0; }
-    .link { text-decoration: none; color: #1a0dab; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      min-height: 100vh;
+      padding: 12px;
+    }
+
+    /* ── Header ── */
+    #header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+    }
+    #header h1 { font-size: 15px; color: var(--accent); letter-spacing: 3px; text-transform: uppercase; }
+    #clock { font-size: 20px; font-weight: bold; color: var(--accent); letter-spacing: 2px; }
+    #date-display { color: var(--text-dim); font-size: 11px; text-align: right; }
+
+    /* ── Grid ── */
+    #grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: auto auto;
+      gap: 10px;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 10px;
+      overflow: hidden;
+    }
+
+    .panel-title {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 6px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .panel-title span.badge {
+      background: var(--accent);
+      color: #000;
+      font-size: 9px;
+      padding: 1px 5px;
+      font-weight: bold;
+    }
+
+    /* ── News ── */
+    #panel-news { grid-column: 1 / 3; }
+    #panel-news2 { grid-column: 3 / 4; }
+
+    .news-item {
+      padding: 5px 0;
+      border-bottom: 1px solid var(--border);
+      line-height: 1.4;
+    }
+    .news-item:last-child { border-bottom: none; }
+    .news-item a {
+      color: var(--text);
+      text-decoration: none;
+      display: block;
+    }
+    .news-item a:hover { color: var(--accent2); }
+    .news-item .meta { color: var(--muted); font-size: 10px; margin-top: 2px; }
+    .news-item .src-tag {
+      display: inline-block;
+      background: var(--surface2);
+      color: var(--accent2);
+      font-size: 9px;
+      padding: 1px 4px;
+      margin-right: 4px;
+    }
+
+    /* ── Cycling Skills ── */
+    #panel-skills { grid-column: 1 / 2; }
+
+    .skill-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .skill-row:last-of-type { border-bottom: none; }
+    .skill-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .skill-bar-wrap { width: 80px; height: 6px; background: var(--border); flex-shrink: 0; }
+    .skill-bar { height: 100%; background: var(--accent); transition: width 0.3s; }
+    .skill-score { font-size: 11px; color: var(--accent); width: 24px; text-align: right; flex-shrink: 0; }
+    .skill-actions { display: flex; gap: 3px; flex-shrink: 0; }
+    .skill-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 11px;
+      width: 18px;
+      height: 18px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: inherit;
+    }
+    .skill-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .skill-btn.del { color: var(--red); border-color: transparent; }
+    .skill-btn.del:hover { border-color: var(--red); }
+
+    #add-skill-form {
+      display: flex;
+      gap: 4px;
+      margin-top: 8px;
+    }
+    #new-skill-name {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 4px 6px;
+      font-family: inherit;
+      font-size: 12px;
+    }
+    #new-skill-name:focus { outline: none; border-color: var(--accent); }
+    #add-skill-btn {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      padding: 4px 10px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    #add-skill-btn:hover { opacity: 0.85; }
+
+    /* ── Stats / Rides ── */
+    #panel-rides { grid-column: 2 / 3; }
+    #panel-goals { grid-column: 3 / 4; }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    .stat-box {
+      background: var(--surface2);
+      padding: 8px;
+      border: 1px solid var(--border);
+    }
+    .stat-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+    .stat-value { font-size: 18px; font-weight: bold; color: var(--accent); margin-top: 2px; }
+    .stat-unit { font-size: 10px; color: var(--text-dim); }
+
+    .log-form { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
+    .log-row { display: flex; gap: 4px; }
+    .log-input {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 4px 6px;
+      font-family: inherit;
+      font-size: 11px;
+    }
+    .log-input:focus { outline: none; border-color: var(--accent); }
+    .log-btn {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      padding: 4px 10px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+    .ride-history { margin-top: 8px; }
+    .ride-entry {
+      display: flex;
+      justify-content: space-between;
+      padding: 3px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 11px;
+    }
+    .ride-entry .r-date { color: var(--muted); }
+    .ride-entry .r-dist { color: var(--accent2); }
+    .ride-entry .r-time { color: var(--text-dim); }
+    .ride-del { background: none; border: none; color: var(--red); cursor: pointer; font-size: 10px; opacity: 0.6; }
+    .ride-del:hover { opacity: 1; }
+
+    /* ── Goals ── */
+    .goal-item {
+      padding: 5px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .goal-item:last-child { border-bottom: none; }
+    .goal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; }
+    .goal-name { font-size: 12px; }
+    .goal-pct { font-size: 11px; color: var(--accent); }
+    .goal-bar-wrap { height: 4px; background: var(--border); }
+    .goal-bar { height: 100%; background: var(--accent2); transition: width 0.3s; }
+    .goal-sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+    .goal-form { display: flex; gap: 4px; margin-top: 8px; flex-wrap: wrap; }
+    .goal-input {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 4px 6px;
+      font-family: inherit;
+      font-size: 11px;
+    }
+    .goal-input:focus { outline: none; border-color: var(--accent); }
+    #goal-label { flex: 1; min-width: 80px; }
+    #goal-target { width: 70px; }
+    #goal-unit { width: 55px; }
+    #goal-current { width: 60px; }
+
+    /* ── Ticker ── */
+    #ticker-wrap {
+      border-top: 1px solid var(--border);
+      margin-top: 12px;
+      padding-top: 6px;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    #ticker {
+      display: inline-block;
+      animation: scroll-left 60s linear infinite;
+      color: var(--text-dim);
+      font-size: 11px;
+    }
+    #ticker span.t-head { color: var(--accent); margin-right: 4px; }
+    @keyframes scroll-left {
+      0%   { transform: translateX(100vw); }
+      100% { transform: translateX(-100%); }
+    }
+
+    /* ── Loading / Error ── */
+    .loading { color: var(--muted); font-size: 11px; }
+    .error { color: var(--red); font-size: 11px; }
+
+    /* ── Scrollable panels ── */
+    .scroll-inner { max-height: 280px; overflow-y: auto; }
+    .scroll-inner::-webkit-scrollbar { width: 4px; }
+    .scroll-inner::-webkit-scrollbar-track { background: var(--surface); }
+    .scroll-inner::-webkit-scrollbar-thumb { background: var(--border); }
+
+    @media (max-width: 900px) {
+      #grid { grid-template-columns: 1fr 1fr; }
+      #panel-news { grid-column: 1 / 3; }
+      #panel-news2 { grid-column: 1 / 3; }
+    }
+    @media (max-width: 600px) {
+      #grid { grid-template-columns: 1fr; }
+      #panel-news, #panel-news2 { grid-column: auto; }
+    }
   </style>
 </head>
 <body>
 
-  <h1>Live Dashboard</h1>
+<div id="header">
+  <h1>&#9650; Dashboard</h1>
+  <div>
+    <div id="clock">--:--:--</div>
+    <div id="date-display">--</div>
+  </div>
+</div>
 
-  <div class="section" id="newsSection">
-    <h2>Latest News</h2>
-    <div id="news"></div>
+<div id="grid">
+
+  <!-- World News -->
+  <div class="panel" id="panel-news">
+    <div class="panel-title">World News <span class="badge" id="news-count">...</span></div>
+    <div class="scroll-inner" id="news-list"><div class="loading">Loading headlines...</div></div>
   </div>
 
-  <div class="section" id="stocksSection">
-    <h2>Stocks</h2>
-    <div id="stocks"></div>
+  <!-- Cycling News -->
+  <div class="panel" id="panel-news2">
+    <div class="panel-title">Cycling News <span class="badge" id="cycling-count">...</span></div>
+    <div class="scroll-inner" id="cycling-list"><div class="loading">Loading...</div></div>
   </div>
+
+  <!-- Skill Tracker -->
+  <div class="panel" id="panel-skills">
+    <div class="panel-title">Skill Tracker</div>
+    <div id="skills-list"></div>
+    <form id="add-skill-form" onsubmit="addSkill(event)">
+      <input id="new-skill-name" type="text" placeholder="Add skill (e.g. Climbing)" maxlength="24" autocomplete="off">
+      <button id="add-skill-btn" type="submit">+</button>
+    </form>
+  </div>
+
+  <!-- Ride Log -->
+  <div class="panel" id="panel-rides">
+    <div class="panel-title">Ride Log</div>
+    <div class="stat-grid" id="stat-grid">
+      <div class="stat-box">
+        <div class="stat-label">Total Rides</div>
+        <div class="stat-value" id="stat-rides">0</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Total Distance</div>
+        <div class="stat-value" id="stat-dist">0</div>
+        <div class="stat-unit">km</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">This Week</div>
+        <div class="stat-value" id="stat-week">0</div>
+        <div class="stat-unit">km</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Longest Ride</div>
+        <div class="stat-value" id="stat-longest">0</div>
+        <div class="stat-unit">km</div>
+      </div>
+    </div>
+    <form class="log-form" onsubmit="logRide(event)">
+      <div class="log-row">
+        <input class="log-input" id="ride-dist" type="number" min="0" step="0.1" placeholder="km" style="width:70px">
+        <input class="log-input" id="ride-time" type="text" placeholder="duration (e.g. 1h30m)" style="flex:1">
+        <input class="log-input" id="ride-note" type="text" placeholder="note" style="flex:2">
+        <button class="log-btn" type="submit">Log</button>
+      </div>
+    </form>
+    <div class="ride-history scroll-inner" id="ride-history"></div>
+  </div>
+
+  <!-- Goals -->
+  <div class="panel" id="panel-goals">
+    <div class="panel-title">Goals</div>
+    <div id="goals-list"></div>
+    <form class="goal-form" onsubmit="addGoal(event)">
+      <input class="goal-input" id="goal-label" type="text" placeholder="Goal name" maxlength="22" autocomplete="off">
+      <input class="goal-input" id="goal-current" type="number" min="0" placeholder="now" step="any">
+      <input class="goal-input" id="goal-target" type="number" min="1" placeholder="target" step="any">
+      <input class="goal-input" id="goal-unit" type="text" placeholder="unit" maxlength="8">
+      <button class="log-btn" type="submit" style="width:100%">Add Goal</button>
+    </form>
+  </div>
+
+</div>
+
+<div id="ticker-wrap">
+  <div id="ticker">Loading news ticker...</div>
+</div>
 
 <script>
+// ── Clock ──────────────────────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    now.toLocaleTimeString('en-US', { hour12: false });
+  document.getElementById('date-display').textContent =
+    now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+}
+updateClock();
+setInterval(updateClock, 1000);
 
-// —––––––––––– NEWS (no key API) —–––––––––––
-fetch('https://saurav.tech/NewsAPI/top-headlines/category/general/us.json')
-  .then(response => response.json())
-  .then(data => {
-    const newsDiv = document.getElementById('news');
-    if (data.articles && data.articles.length) {
-      data.articles.slice(0, 5).forEach(article => {
-        let a = document.createElement('a');
-        a.href = article.url;
-        a.textContent = article.title;
-        a.target = "_blank";
-        a.className = "link item";
-        newsDiv.appendChild(a);
-      });
-    } else {
-      newsDiv.textContent = 'Unable to load news.';
-    }
-  })
-  .catch(err => {
-    console.error(err);
-    document.getElementById('news').textContent = 'Error loading news.';
+// ── News ───────────────────────────────────────────────────────────────────
+const RSS2JSON = 'https://api.rss2json.com/v1/api.json?rss_url=';
+const NEWS_FEEDS = [
+  { label: 'BBC',     url: 'https://feeds.bbci.co.uk/news/world/rss.xml' },
+  { label: 'Reuters', url: 'https://feeds.reuters.com/Reuters/worldNews' },
+  { label: 'AP',      url: 'https://rsshub.app/apnews/topics/apf-topnews' },
+];
+const CYCLING_FEEDS = [
+  { label: 'VeloNews',    url: 'https://www.velonews.com/feed/' },
+  { label: 'CyclingNews', url: 'https://www.cyclingnews.com/feeds/news/' },
+  { label: 'BikeRadar',   url: 'https://www.bikeradar.com/feed/' },
+];
+
+function timeAgo(dateStr) {
+  const diff = (Date.now() - new Date(dateStr)) / 1000;
+  if (diff < 60) return `${Math.floor(diff)}s ago`;
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+  return `${Math.floor(diff / 86400)}d ago`;
+}
+
+async function loadFeed(feeds, listId, countId, maxItems) {
+  const container = document.getElementById(listId);
+  const countEl = document.getElementById(countId);
+  const allArticles = [];
+
+  const requests = feeds.map(f =>
+    fetch(RSS2JSON + encodeURIComponent(f.url))
+      .then(r => r.json())
+      .then(d => (d.items || []).map(i => ({ ...i, _src: f.label })))
+      .catch(() => [])
+  );
+
+  const results = await Promise.all(requests);
+  results.forEach(articles => allArticles.push(...articles));
+  allArticles.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+
+  container.innerHTML = '';
+  const shown = allArticles.slice(0, maxItems);
+  countEl.textContent = shown.length;
+
+  if (!shown.length) {
+    container.innerHTML = '<div class="error">Could not load feeds.</div>';
+    return shown.map(a => a.title);
+  }
+
+  shown.forEach(a => {
+    const div = document.createElement('div');
+    div.className = 'news-item';
+    div.innerHTML = `
+      <a href="${a.link}" target="_blank" rel="noopener">
+        <span class="src-tag">${a._src}</span>${a.title}
+      </a>
+      <div class="meta">${a.pubDate ? timeAgo(a.pubDate) : ''}</div>`;
+    container.appendChild(div);
   });
 
-// —––––––––––– STOCKS (free browser API) —–––––––––––
-fetch('https://api.marketdata.app/v1/quote?symbols=AAPL,TSLA,SPY')
-  .then(response => response.json())
-  .then(data => {
-    const stocksDiv = document.getElementById('stocks');
-    if (data && data.length) {
-      data.forEach(stock => {
-        let p = document.createElement('div');
-        p.className = "item";
-        p.textContent = `${stock.symbol}: $${stock.price ?? stock.close ?? 'N/A'}`;
-        stocksDiv.appendChild(p);
-      });
-    } else {
-      stocksDiv.textContent = 'Unable to load stock data.';
-    }
-  })
-  .catch(err => {
-    console.error(err);
-    document.getElementById('stocks').textContent = 'Error loading stocks.';
+  return shown.map(a => `[${a._src}] ${a.title}`);
+}
+
+let tickerTitles = [];
+
+async function loadAllNews() {
+  const [worldTitles, cyclingTitles] = await Promise.all([
+    loadFeed(NEWS_FEEDS, 'news-list', 'news-count', 18),
+    loadFeed(CYCLING_FEEDS, 'cycling-list', 'cycling-count', 12),
+  ]);
+  tickerTitles = [...worldTitles, ...cyclingTitles];
+  updateTicker();
+}
+
+function updateTicker() {
+  const el = document.getElementById('ticker');
+  if (!tickerTitles.length) return;
+  el.innerHTML = tickerTitles
+    .map(t => `<span class="t-head">&#9679;</span>${t}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`)
+    .join('');
+}
+
+loadAllNews();
+setInterval(loadAllNews, 5 * 60 * 1000); // refresh every 5 min
+
+// ── Skill Tracker ─────────────────────────────────────────────────────────
+function loadSkills() {
+  return JSON.parse(localStorage.getItem('cycling_skills') || '[]');
+}
+function saveSkills(skills) {
+  localStorage.setItem('cycling_skills', JSON.stringify(skills));
+}
+
+function renderSkills() {
+  const skills = loadSkills();
+  const container = document.getElementById('skills-list');
+  container.innerHTML = '';
+  if (!skills.length) {
+    container.innerHTML = '<div class="loading">No skills yet. Add one below.</div>';
+    return;
+  }
+  skills.forEach((s, i) => {
+    const pct = Math.round((s.score / 10) * 100);
+    const row = document.createElement('div');
+    row.className = 'skill-row';
+    row.innerHTML = `
+      <span class="skill-name" title="${s.name}">${s.name}</span>
+      <div class="skill-bar-wrap"><div class="skill-bar" style="width:${pct}%"></div></div>
+      <span class="skill-score">${s.score}</span>
+      <div class="skill-actions">
+        <button class="skill-btn" onclick="adjustSkill(${i}, -1)" title="Decrease">−</button>
+        <button class="skill-btn" onclick="adjustSkill(${i}, 1)" title="Increase">+</button>
+        <button class="skill-btn del" onclick="deleteSkill(${i})" title="Remove">✕</button>
+      </div>`;
+    container.appendChild(row);
+  });
+}
+
+function addSkill(e) {
+  e.preventDefault();
+  const input = document.getElementById('new-skill-name');
+  const name = input.value.trim();
+  if (!name) return;
+  const skills = loadSkills();
+  if (skills.find(s => s.name.toLowerCase() === name.toLowerCase())) {
+    input.style.borderColor = 'var(--red)';
+    setTimeout(() => input.style.borderColor = '', 800);
+    return;
+  }
+  skills.push({ name, score: 5 });
+  saveSkills(skills);
+  input.value = '';
+  renderSkills();
+}
+
+function adjustSkill(i, delta) {
+  const skills = loadSkills();
+  skills[i].score = Math.max(0, Math.min(10, skills[i].score + delta));
+  saveSkills(skills);
+  renderSkills();
+}
+
+function deleteSkill(i) {
+  const skills = loadSkills();
+  skills.splice(i, 1);
+  saveSkills(skills);
+  renderSkills();
+}
+
+renderSkills();
+
+// ── Ride Log ──────────────────────────────────────────────────────────────
+function loadRides() {
+  return JSON.parse(localStorage.getItem('cycling_rides') || '[]');
+}
+function saveRides(rides) {
+  localStorage.setItem('cycling_rides', JSON.stringify(rides));
+}
+
+function startOfWeek() {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() - d.getDay());
+  return d;
+}
+
+function renderRides() {
+  const rides = loadRides();
+  const week = startOfWeek();
+
+  let total = 0, weekDist = 0, longest = 0;
+  rides.forEach(r => {
+    total += r.dist;
+    if (new Date(r.date) >= week) weekDist += r.dist;
+    if (r.dist > longest) longest = r.dist;
   });
 
+  document.getElementById('stat-rides').textContent = rides.length;
+  document.getElementById('stat-dist').textContent = total.toFixed(1);
+  document.getElementById('stat-week').textContent = weekDist.toFixed(1);
+  document.getElementById('stat-longest').textContent = longest.toFixed(1);
+
+  const hist = document.getElementById('ride-history');
+  hist.innerHTML = '';
+  rides.slice().reverse().slice(0, 10).forEach((r, revI) => {
+    const i = rides.length - 1 - revI;
+    const d = new Date(r.date);
+    const entry = document.createElement('div');
+    entry.className = 'ride-entry';
+    entry.innerHTML = `
+      <span class="r-date">${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+      <span class="r-dist">${r.dist} km</span>
+      <span class="r-time">${r.time || '—'}</span>
+      <span style="color:var(--text-dim);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-left:6px">${r.note || ''}</span>
+      <button class="ride-del" onclick="deleteRide(${i})">✕</button>`;
+    hist.appendChild(entry);
+  });
+}
+
+function logRide(e) {
+  e.preventDefault();
+  const dist = parseFloat(document.getElementById('ride-dist').value);
+  if (!dist || dist <= 0) return;
+  const rides = loadRides();
+  rides.push({
+    dist,
+    time: document.getElementById('ride-time').value.trim(),
+    note: document.getElementById('ride-note').value.trim(),
+    date: new Date().toISOString(),
+  });
+  saveRides(rides);
+  document.getElementById('ride-dist').value = '';
+  document.getElementById('ride-time').value = '';
+  document.getElementById('ride-note').value = '';
+  renderRides();
+}
+
+function deleteRide(i) {
+  const rides = loadRides();
+  rides.splice(i, 1);
+  saveRides(rides);
+  renderRides();
+}
+
+renderRides();
+
+// ── Goals ─────────────────────────────────────────────────────────────────
+function loadGoals() {
+  return JSON.parse(localStorage.getItem('cycling_goals') || '[]');
+}
+function saveGoals(goals) {
+  localStorage.setItem('cycling_goals', JSON.stringify(goals));
+}
+
+function renderGoals() {
+  const goals = loadGoals();
+  const container = document.getElementById('goals-list');
+  container.innerHTML = '';
+  if (!goals.length) {
+    container.innerHTML = '<div class="loading">No goals yet.</div>';
+    return;
+  }
+  goals.forEach((g, i) => {
+    const pct = Math.min(100, Math.round((g.current / g.target) * 100));
+    const div = document.createElement('div');
+    div.className = 'goal-item';
+    div.innerHTML = `
+      <div class="goal-header">
+        <span class="goal-name">${g.label}</span>
+        <div style="display:flex;gap:6px;align-items:center">
+          <span class="goal-pct">${pct}%</span>
+          <button class="skill-btn del" onclick="deleteGoal(${i})" style="width:16px;height:16px;font-size:9px">✕</button>
+        </div>
+      </div>
+      <div class="goal-bar-wrap"><div class="goal-bar" style="width:${pct}%"></div></div>
+      <div class="goal-sub">${g.current} / ${g.target} ${g.unit || ''}</div>
+      <div style="display:flex;gap:4px;margin-top:4px">
+        <input class="log-input" type="number" placeholder="+/- update" id="goal-upd-${i}" style="width:80px;font-size:10px;padding:2px 4px">
+        <button class="log-btn" onclick="updateGoalProgress(${i})" style="font-size:10px;padding:2px 8px">Set</button>
+      </div>`;
+    container.appendChild(div);
+  });
+}
+
+function addGoal(e) {
+  e.preventDefault();
+  const label = document.getElementById('goal-label').value.trim();
+  const target = parseFloat(document.getElementById('goal-target').value);
+  const current = parseFloat(document.getElementById('goal-current').value) || 0;
+  const unit = document.getElementById('goal-unit').value.trim();
+  if (!label || !target) return;
+  const goals = loadGoals();
+  goals.push({ label, target, current, unit });
+  saveGoals(goals);
+  document.getElementById('goal-label').value = '';
+  document.getElementById('goal-target').value = '';
+  document.getElementById('goal-current').value = '';
+  document.getElementById('goal-unit').value = '';
+  renderGoals();
+}
+
+function updateGoalProgress(i) {
+  const input = document.getElementById(`goal-upd-${i}`);
+  const val = parseFloat(input.value);
+  if (isNaN(val)) return;
+  const goals = loadGoals();
+  goals[i].current = Math.max(0, val);
+  saveGoals(goals);
+  renderGoals();
+}
+
+function deleteGoal(i) {
+  const goals = loadGoals();
+  goals.splice(i, 1);
+  saveGoals(goals);
+  renderGoals();
+}
+
+renderGoals();
 </script>
-
 </body>
 </html>
