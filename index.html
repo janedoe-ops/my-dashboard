@@ -14,8 +14,10 @@
       --border: #2a2a2a;
       --accent: #e8ff47;
       --accent2: #47c8ff;
+      --purple: #b47fff;
       --red: #ff4747;
       --green: #47ff8a;
+      --yellow: #e8ff47;
       --muted: #555;
       --text: #e0e0e0;
       --text-dim: #888;
@@ -47,7 +49,6 @@
     #grid {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
-      grid-template-rows: auto auto;
       gap: 10px;
     }
 
@@ -71,29 +72,116 @@
       align-items: center;
     }
 
-    .panel-title span.badge {
+    .panel-title .badge {
       background: var(--accent);
       color: #000;
       font-size: 9px;
       padding: 1px 5px;
       font-weight: bold;
     }
+    .panel-title .badge.connected { background: var(--green); }
+    .panel-title .badge.error     { background: var(--red); color: #fff; }
+
+    /* ── WHOOP Panel ── */
+    #panel-whoop { grid-column: 1 / 4; }
+
+    #whoop-connect-area { text-align: center; padding: 20px 0; }
+    #whoop-connect-btn {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      padding: 10px 28px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      letter-spacing: 1px;
+    }
+    #whoop-connect-btn:hover { opacity: 0.85; }
+    #whoop-hint { color: var(--muted); font-size: 10px; margin-top: 8px; }
+
+    .whoop-metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    .whoop-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 10px;
+    }
+    .whoop-card-title {
+      font-size: 9px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+    .whoop-big {
+      font-size: 36px;
+      font-weight: bold;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .whoop-big.c-green  { color: var(--green); }
+    .whoop-big.c-yellow { color: var(--yellow); }
+    .whoop-big.c-red    { color: var(--red); }
+    .whoop-big.c-blue   { color: var(--accent2); }
+    .whoop-big.c-purple { color: var(--purple); }
+
+    .whoop-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      padding: 3px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .whoop-row:last-child { border-bottom: none; }
+    .whoop-row .k { color: var(--muted); }
+    .whoop-row .v { color: var(--text); }
+
+    .whoop-workout {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 11px;
+      gap: 6px;
+    }
+    .whoop-workout:last-child { border-bottom: none; }
+    .wo-sport { color: var(--accent2); min-width: 90px; }
+    .wo-strain { color: var(--accent); font-weight: bold; width: 28px; text-align: right; }
+    .wo-dur { color: var(--text-dim); width: 50px; text-align: right; }
+    .wo-date { color: var(--muted); font-size: 10px; width: 55px; text-align: right; }
+
+    .whoop-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 8px;
+      padding-top: 6px;
+      border-top: 1px solid var(--border);
+    }
+    .whoop-footer button {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      font-family: inherit;
+      font-size: 10px;
+      padding: 3px 8px;
+      cursor: pointer;
+    }
+    .whoop-footer button:hover { border-color: var(--accent); color: var(--accent); }
+    .whoop-footer button.danger:hover { border-color: var(--red); color: var(--red); }
 
     /* ── News ── */
-    #panel-news { grid-column: 1 / 3; }
+    #panel-news  { grid-column: 1 / 3; }
     #panel-news2 { grid-column: 3 / 4; }
 
-    .news-item {
-      padding: 5px 0;
-      border-bottom: 1px solid var(--border);
-      line-height: 1.4;
-    }
+    .news-item { padding: 5px 0; border-bottom: 1px solid var(--border); line-height: 1.4; }
     .news-item:last-child { border-bottom: none; }
-    .news-item a {
-      color: var(--text);
-      text-decoration: none;
-      display: block;
-    }
+    .news-item a { color: var(--text); text-decoration: none; display: block; }
     .news-item a:hover { color: var(--accent2); }
     .news-item .meta { color: var(--muted); font-size: 10px; margin-top: 2px; }
     .news-item .src-tag {
@@ -108,13 +196,7 @@
     /* ── Cycling Skills ── */
     #panel-skills { grid-column: 1 / 2; }
 
-    .skill-row {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 0;
-      border-bottom: 1px solid var(--border);
-    }
+    .skill-row { display: flex; align-items: center; gap: 6px; padding: 4px 0; border-bottom: 1px solid var(--border); }
     .skill-row:last-of-type { border-bottom: none; }
     .skill-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .skill-bar-wrap { width: 80px; height: 6px; background: var(--border); flex-shrink: 0; }
@@ -127,8 +209,7 @@
       color: var(--text-dim);
       cursor: pointer;
       font-size: 11px;
-      width: 18px;
-      height: 18px;
+      width: 18px; height: 18px;
       display: flex; align-items: center; justify-content: center;
       font-family: inherit;
     }
@@ -136,11 +217,7 @@
     .skill-btn.del { color: var(--red); border-color: transparent; }
     .skill-btn.del:hover { border-color: var(--red); }
 
-    #add-skill-form {
-      display: flex;
-      gap: 4px;
-      margin-top: 8px;
-    }
+    #add-skill-form { display: flex; gap: 4px; margin-top: 8px; }
     #new-skill-name {
       flex: 1;
       background: var(--surface2);
@@ -167,17 +244,8 @@
     #panel-rides { grid-column: 2 / 3; }
     #panel-goals { grid-column: 3 / 4; }
 
-    .stat-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px;
-      margin-bottom: 8px;
-    }
-    .stat-box {
-      background: var(--surface2);
-      padding: 8px;
-      border: 1px solid var(--border);
-    }
+    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px; }
+    .stat-box { background: var(--surface2); padding: 8px; border: 1px solid var(--border); }
     .stat-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
     .stat-value { font-size: 18px; font-weight: bold; color: var(--accent); margin-top: 2px; }
     .stat-unit { font-size: 10px; color: var(--text-dim); }
@@ -220,10 +288,7 @@
     .ride-del:hover { opacity: 1; }
 
     /* ── Goals ── */
-    .goal-item {
-      padding: 5px 0;
-      border-bottom: 1px solid var(--border);
-    }
+    .goal-item { padding: 5px 0; border-bottom: 1px solid var(--border); }
     .goal-item:last-child { border-bottom: none; }
     .goal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; }
     .goal-name { font-size: 12px; }
@@ -231,7 +296,6 @@
     .goal-bar-wrap { height: 4px; background: var(--border); }
     .goal-bar { height: 100%; background: var(--accent2); transition: width 0.3s; }
     .goal-sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
-
     .goal-form { display: flex; gap: 4px; margin-top: 8px; flex-wrap: wrap; }
     .goal-input {
       background: var(--surface2);
@@ -242,9 +306,9 @@
       font-size: 11px;
     }
     .goal-input:focus { outline: none; border-color: var(--accent); }
-    #goal-label { flex: 1; min-width: 80px; }
-    #goal-target { width: 70px; }
-    #goal-unit { width: 55px; }
+    #goal-label   { flex: 1; min-width: 80px; }
+    #goal-target  { width: 70px; }
+    #goal-unit    { width: 55px; }
     #goal-current { width: 60px; }
 
     /* ── Ticker ── */
@@ -255,23 +319,16 @@
       overflow: hidden;
       white-space: nowrap;
     }
-    #ticker {
-      display: inline-block;
-      animation: scroll-left 60s linear infinite;
-      color: var(--text-dim);
-      font-size: 11px;
-    }
+    #ticker { display: inline-block; animation: scroll-left 60s linear infinite; color: var(--text-dim); font-size: 11px; }
     #ticker span.t-head { color: var(--accent); margin-right: 4px; }
     @keyframes scroll-left {
       0%   { transform: translateX(100vw); }
       100% { transform: translateX(-100%); }
     }
 
-    /* ── Loading / Error ── */
     .loading { color: var(--muted); font-size: 11px; }
-    .error { color: var(--red); font-size: 11px; }
+    .error   { color: var(--red);   font-size: 11px; }
 
-    /* ── Scrollable panels ── */
     .scroll-inner { max-height: 280px; overflow-y: auto; }
     .scroll-inner::-webkit-scrollbar { width: 4px; }
     .scroll-inner::-webkit-scrollbar-track { background: var(--surface); }
@@ -279,12 +336,15 @@
 
     @media (max-width: 900px) {
       #grid { grid-template-columns: 1fr 1fr; }
-      #panel-news { grid-column: 1 / 3; }
+      #panel-whoop { grid-column: 1 / 3; }
+      #panel-news  { grid-column: 1 / 3; }
       #panel-news2 { grid-column: 1 / 3; }
+      .whoop-metrics { grid-template-columns: 1fr 1fr; }
     }
     @media (max-width: 600px) {
       #grid { grid-template-columns: 1fr; }
-      #panel-news, #panel-news2 { grid-column: auto; }
+      #panel-whoop, #panel-news, #panel-news2 { grid-column: auto; }
+      .whoop-metrics { grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
@@ -299,6 +359,23 @@
 </div>
 
 <div id="grid">
+
+  <!-- WHOOP -->
+  <div class="panel" id="panel-whoop">
+    <div class="panel-title">
+      WHOOP
+      <div style="display:flex;gap:8px;align-items:center">
+        <span id="whoop-sync-time" style="font-size:9px;color:var(--muted);text-transform:none;letter-spacing:0"></span>
+        <span class="badge" id="whoop-badge">NOT CONNECTED</span>
+      </div>
+    </div>
+    <div id="whoop-body">
+      <div id="whoop-connect-area">
+        <button id="whoop-connect-btn" onclick="whoopLogin()">&#9650; Connect WHOOP</button>
+        <div id="whoop-hint">Opens WHOOP login in this tab — you'll be redirected back automatically.</div>
+      </div>
+    </div>
+  </div>
 
   <!-- World News -->
   <div class="panel" id="panel-news">
@@ -325,7 +402,7 @@
   <!-- Ride Log -->
   <div class="panel" id="panel-rides">
     <div class="panel-title">Ride Log</div>
-    <div class="stat-grid" id="stat-grid">
+    <div class="stat-grid">
       <div class="stat-box">
         <div class="stat-label">Total Rides</div>
         <div class="stat-value" id="stat-rides">0</div>
@@ -377,7 +454,7 @@
 </div>
 
 <script>
-// ── Clock ──────────────────────────────────────────────────────────────────
+// ── Clock ─────────────────────────────────────────────────────────────────
 function updateClock() {
   const now = new Date();
   document.getElementById('clock').textContent =
@@ -388,7 +465,7 @@ function updateClock() {
 updateClock();
 setInterval(updateClock, 1000);
 
-// ── News ───────────────────────────────────────────────────────────────────
+// ── News ──────────────────────────────────────────────────────────────────
 const RSS2JSON = 'https://api.rss2json.com/v1/api.json?rss_url=';
 const NEWS_FEEDS = [
   { label: 'BBC',     url: 'https://feeds.bbci.co.uk/news/world/rss.xml' },
@@ -411,37 +488,33 @@ function timeAgo(dateStr) {
 
 async function loadFeed(feeds, listId, countId, maxItems) {
   const container = document.getElementById(listId);
-  const countEl = document.getElementById(countId);
-  const allArticles = [];
+  const countEl   = document.getElementById(countId);
+  const all = [];
 
-  const requests = feeds.map(f =>
-    fetch(RSS2JSON + encodeURIComponent(f.url))
-      .then(r => r.json())
-      .then(d => (d.items || []).map(i => ({ ...i, _src: f.label })))
-      .catch(() => [])
+  const results = await Promise.all(
+    feeds.map(f =>
+      fetch(RSS2JSON + encodeURIComponent(f.url))
+        .then(r => r.json())
+        .then(d => (d.items || []).map(i => ({ ...i, _src: f.label })))
+        .catch(() => [])
+    )
   );
-
-  const results = await Promise.all(requests);
-  results.forEach(articles => allArticles.push(...articles));
-  allArticles.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+  results.forEach(a => all.push(...a));
+  all.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
 
   container.innerHTML = '';
-  const shown = allArticles.slice(0, maxItems);
+  const shown = all.slice(0, maxItems);
   countEl.textContent = shown.length;
 
   if (!shown.length) {
     container.innerHTML = '<div class="error">Could not load feeds.</div>';
-    return shown.map(a => a.title);
+    return [];
   }
 
   shown.forEach(a => {
     const div = document.createElement('div');
     div.className = 'news-item';
-    div.innerHTML = `
-      <a href="${a.link}" target="_blank" rel="noopener">
-        <span class="src-tag">${a._src}</span>${a.title}
-      </a>
-      <div class="meta">${a.pubDate ? timeAgo(a.pubDate) : ''}</div>`;
+    div.innerHTML = `<a href="${a.link}" target="_blank" rel="noopener"><span class="src-tag">${a._src}</span>${a.title}</a><div class="meta">${a.pubDate ? timeAgo(a.pubDate) : ''}</div>`;
     container.appendChild(div);
   });
 
@@ -451,11 +524,11 @@ async function loadFeed(feeds, listId, countId, maxItems) {
 let tickerTitles = [];
 
 async function loadAllNews() {
-  const [worldTitles, cyclingTitles] = await Promise.all([
-    loadFeed(NEWS_FEEDS, 'news-list', 'news-count', 18),
+  const [w, c] = await Promise.all([
+    loadFeed(NEWS_FEEDS,    'news-list',    'news-count',    18),
     loadFeed(CYCLING_FEEDS, 'cycling-list', 'cycling-count', 12),
   ]);
-  tickerTitles = [...worldTitles, ...cyclingTitles];
+  tickerTitles = [...w, ...c];
   updateTicker();
 }
 
@@ -468,15 +541,234 @@ function updateTicker() {
 }
 
 loadAllNews();
-setInterval(loadAllNews, 5 * 60 * 1000); // refresh every 5 min
+setInterval(loadAllNews, 5 * 60 * 1000);
+
+// ── WHOOP ─────────────────────────────────────────────────────────────────
+const W = {
+  CLIENT_ID:     '8c18e31d-ba6c-414d-be83-e385ff089697',
+  CLIENT_SECRET: '51360072c1cbb3bc015746b01070373a378555df634201e6b4edc84e572d6048',
+  REDIRECT_URI:  'http://localhost:8080/callback.html',
+  AUTH_URL:      'https://api.prod.whoop.com/oauth/oauth2/auth',
+  TOKEN_URL:     'https://api.prod.whoop.com/oauth/oauth2/token',
+  API:           'https://api.prod.whoop.com/developer/v1',
+  SCOPES:        'read:recovery read:sleep read:cycles read:workout read:profile read:body_measurement offline',
+};
+
+const SPORTS = {
+  0: 'Running', 1: 'Cycling', 16: 'Basketball', 22: 'Swimming',
+  46: 'Weights', 57: 'Football', 63: 'HIIT', 71: 'Spinning',
+  84: 'Yoga', 91: 'Tennis', 126: 'MTB', 127: 'Skiing', 128: 'Squash',
+};
+
+function whoopLogin() {
+  const state = Math.random().toString(36).slice(2);
+  localStorage.setItem('whoop_state', state);
+  const url = W.AUTH_URL + '?' + new URLSearchParams({
+    client_id:     W.CLIENT_ID,
+    redirect_uri:  W.REDIRECT_URI,
+    response_type: 'code',
+    scope:         W.SCOPES,
+    state,
+  });
+  window.location.href = url;
+}
+
+function whoopLogout() {
+  ['whoop_tokens', 'whoop_token_expiry'].forEach(k => localStorage.removeItem(k));
+  renderWhoopDisconnected();
+}
+
+async function whoopRefreshToken(tokens) {
+  const res = await fetch(W.TOKEN_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      client_id:     W.CLIENT_ID,
+      client_secret: W.CLIENT_SECRET,
+      refresh_token: tokens.refresh_token,
+      grant_type:    'refresh_token',
+    }),
+  });
+  const data = await res.json();
+  if (!data.access_token) throw new Error('Refresh failed');
+  localStorage.setItem('whoop_tokens', JSON.stringify(data));
+  localStorage.setItem('whoop_token_expiry', String(Date.now() + data.expires_in * 1000));
+  return data.access_token;
+}
+
+async function whoopToken() {
+  const tokens = JSON.parse(localStorage.getItem('whoop_tokens') || 'null');
+  if (!tokens) return null;
+  const expiry = parseInt(localStorage.getItem('whoop_token_expiry') || '0');
+  if (Date.now() > expiry - 120000) {
+    return whoopRefreshToken(tokens).catch(() => null);
+  }
+  return tokens.access_token;
+}
+
+async function whoopGet(path) {
+  const token = await whoopToken();
+  if (!token) return null;
+  const res = await fetch(W.API + path, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error(`${res.status} ${path}`);
+  return res.json();
+}
+
+function msToHM(ms) {
+  const h = Math.floor(ms / 3600000);
+  const m = Math.floor((ms % 3600000) / 60000);
+  return h > 0 ? `${h}h ${m}m` : `${m}m`;
+}
+
+function kjToKcal(kj) {
+  return Math.round(kj / 4.184);
+}
+
+function recoveryClass(score) {
+  if (score >= 67) return 'c-green';
+  if (score >= 34) return 'c-yellow';
+  return 'c-red';
+}
+
+function strainClass(s) {
+  if (s >= 18) return 'c-red';
+  if (s >= 14) return 'c-yellow';
+  if (s >= 10) return 'c-green';
+  return 'c-blue';
+}
+
+function renderWhoopDisconnected() {
+  document.getElementById('whoop-badge').textContent = 'NOT CONNECTED';
+  document.getElementById('whoop-badge').className = 'badge';
+  document.getElementById('whoop-body').innerHTML = `
+    <div id="whoop-connect-area">
+      <button id="whoop-connect-btn" onclick="whoopLogin()">&#9650; Connect WHOOP</button>
+      <div id="whoop-hint">Opens WHOOP login in this tab — you'll be redirected back automatically.</div>
+    </div>`;
+}
+
+function renderWhoopData(recovery, sleep, cycle, workouts) {
+  const badge = document.getElementById('whoop-badge');
+  badge.textContent = 'LIVE';
+  badge.className = 'badge connected';
+
+  const syncEl = document.getElementById('whoop-sync-time');
+  syncEl.textContent = 'synced ' + timeAgo(new Date().toISOString());
+
+  const rec = recovery?.records?.[0];
+  const slp = sleep?.records?.find(r => !r.nap);
+  const cyc = cycle?.records?.[0];
+  const wos = workouts?.records?.slice(0, 5) || [];
+
+  const recScore   = rec?.score?.recovery_score;
+  const hrv        = rec?.score?.hrv_rmssd_milli;
+  const rhr        = rec?.score?.resting_heart_rate;
+  const sleepPerf  = slp?.score?.sleep_performance_percentage;
+  const sleepDur   = slp?.score?.stage_summary?.total_in_bed_time_milli;
+  const remMs      = slp?.score?.stage_summary?.total_rem_sleep_time_milli;
+  const swsMs      = slp?.score?.stage_summary?.total_slow_wave_sleep_time_milli;
+  const strain     = cyc?.score?.strain;
+  const kcal       = cyc?.score?.kilojoule ? kjToKcal(cyc.score.kilojoule) : null;
+  const avgHR      = cyc?.score?.average_heart_rate;
+  const maxHR      = cyc?.score?.max_heart_rate;
+
+  const recHtml = rec?.score_state === 'SCORED' && recScore != null ? `
+    <div class="whoop-big ${recoveryClass(recScore)}">${Math.round(recScore)}<span style="font-size:14px;color:var(--text-dim)">%</span></div>
+    <div class="whoop-row"><span class="k">HRV</span><span class="v">${hrv != null ? Math.round(hrv) + ' ms' : '—'}</span></div>
+    <div class="whoop-row"><span class="k">Resting HR</span><span class="v">${rhr ?? '—'} bpm</span></div>
+    <div class="whoop-row"><span class="k">SpO₂</span><span class="v">${rec.score.spo2_percentage != null ? rec.score.spo2_percentage.toFixed(1) + '%' : '—'}</span></div>
+  ` : `<div class="loading">Calibrating or no data</div>`;
+
+  const sleepHtml = slp?.score_state === 'SCORED' && sleepPerf != null ? `
+    <div class="whoop-big c-purple">${Math.round(sleepPerf)}<span style="font-size:14px;color:var(--text-dim)">%</span></div>
+    <div class="whoop-row"><span class="k">Duration</span><span class="v">${sleepDur ? msToHM(sleepDur) : '—'}</span></div>
+    <div class="whoop-row"><span class="k">REM</span><span class="v">${remMs ? msToHM(remMs) : '—'}</span></div>
+    <div class="whoop-row"><span class="k">Deep (SWS)</span><span class="v">${swsMs ? msToHM(swsMs) : '—'}</span></div>
+  ` : `<div class="loading">No sleep data</div>`;
+
+  const strainHtml = cyc?.score_state === 'SCORED' && strain != null ? `
+    <div class="whoop-big ${strainClass(strain)}">${strain.toFixed(1)}</div>
+    <div class="whoop-row"><span class="k">Calories</span><span class="v">${kcal != null ? kcal.toLocaleString() + ' kcal' : '—'}</span></div>
+    <div class="whoop-row"><span class="k">Avg HR</span><span class="v">${avgHR ?? '—'} bpm</span></div>
+    <div class="whoop-row"><span class="k">Max HR</span><span class="v">${maxHR ?? '—'} bpm</span></div>
+  ` : `<div class="loading">No strain data</div>`;
+
+  const woHtml = wos.length ? wos.map(w => {
+    const sport = SPORTS[w.sport_id] || `Sport ${w.sport_id}`;
+    const dur   = w.start && w.end ? msToHM(new Date(w.end) - new Date(w.start)) : '—';
+    const s     = w.score?.strain?.toFixed(1) ?? '—';
+    const d     = w.start ? new Date(w.start).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+    return `<div class="whoop-workout">
+      <span class="wo-sport">${sport}</span>
+      <span class="wo-strain">${s}</span>
+      <span class="wo-dur">${dur}</span>
+      <span class="wo-date">${d}</span>
+    </div>`;
+  }).join('') : '<div class="loading">No recent workouts</div>';
+
+  document.getElementById('whoop-body').innerHTML = `
+    <div class="whoop-metrics">
+      <div class="whoop-card">
+        <div class="whoop-card-title">Recovery</div>
+        ${recHtml}
+      </div>
+      <div class="whoop-card">
+        <div class="whoop-card-title">Sleep</div>
+        ${sleepHtml}
+      </div>
+      <div class="whoop-card">
+        <div class="whoop-card-title">Day Strain</div>
+        ${strainHtml}
+      </div>
+      <div class="whoop-card">
+        <div class="whoop-card-title">Recent Workouts</div>
+        ${woHtml}
+      </div>
+    </div>
+    <div class="whoop-footer">
+      <button onclick="loadWhoopData()">&#8635; Refresh</button>
+      <button class="danger" onclick="whoopLogout()">Disconnect</button>
+    </div>`;
+}
+
+async function loadWhoopData() {
+  const token = await whoopToken();
+  if (!token) { renderWhoopDisconnected(); return; }
+
+  document.getElementById('whoop-badge').textContent = 'LOADING...';
+
+  try {
+    const [recovery, sleep, cycle, workouts] = await Promise.all([
+      whoopGet('/recovery?limit=1'),
+      whoopGet('/activity/sleep?limit=3'),
+      whoopGet('/cycle?limit=1'),
+      whoopGet('/activity/workout?limit=5'),
+    ]);
+    renderWhoopData(recovery, sleep, cycle, workouts);
+  } catch (e) {
+    const badge = document.getElementById('whoop-badge');
+    badge.textContent = 'ERROR';
+    badge.className = 'badge error';
+    document.getElementById('whoop-body').innerHTML =
+      `<div class="error">Failed to load WHOOP data: ${e.message}</div>
+       <div class="whoop-footer"><button onclick="loadWhoopData()">&#8635; Retry</button><button class="danger" onclick="whoopLogout()">Disconnect</button></div>`;
+  }
+}
+
+// On page load, check for stored tokens and load data
+(async () => {
+  const tokens = localStorage.getItem('whoop_tokens');
+  if (tokens) {
+    await loadWhoopData();
+    setInterval(loadWhoopData, 15 * 60 * 1000);
+  }
+})();
 
 // ── Skill Tracker ─────────────────────────────────────────────────────────
-function loadSkills() {
-  return JSON.parse(localStorage.getItem('cycling_skills') || '[]');
-}
-function saveSkills(skills) {
-  localStorage.setItem('cycling_skills', JSON.stringify(skills));
-}
+function loadSkills() { return JSON.parse(localStorage.getItem('cycling_skills') || '[]'); }
+function saveSkills(s) { localStorage.setItem('cycling_skills', JSON.stringify(s)); }
 
 function renderSkills() {
   const skills = loadSkills();
@@ -495,9 +787,9 @@ function renderSkills() {
       <div class="skill-bar-wrap"><div class="skill-bar" style="width:${pct}%"></div></div>
       <span class="skill-score">${s.score}</span>
       <div class="skill-actions">
-        <button class="skill-btn" onclick="adjustSkill(${i}, -1)" title="Decrease">−</button>
-        <button class="skill-btn" onclick="adjustSkill(${i}, 1)" title="Increase">+</button>
-        <button class="skill-btn del" onclick="deleteSkill(${i})" title="Remove">✕</button>
+        <button class="skill-btn" onclick="adjustSkill(${i},-1)">−</button>
+        <button class="skill-btn" onclick="adjustSkill(${i},1)">+</button>
+        <button class="skill-btn del" onclick="deleteSkill(${i})">✕</button>
       </div>`;
     container.appendChild(row);
   });
@@ -520,9 +812,9 @@ function addSkill(e) {
   renderSkills();
 }
 
-function adjustSkill(i, delta) {
+function adjustSkill(i, d) {
   const skills = loadSkills();
-  skills[i].score = Math.max(0, Math.min(10, skills[i].score + delta));
+  skills[i].score = Math.max(0, Math.min(10, skills[i].score + d));
   saveSkills(skills);
   renderSkills();
 }
@@ -537,48 +829,39 @@ function deleteSkill(i) {
 renderSkills();
 
 // ── Ride Log ──────────────────────────────────────────────────────────────
-function loadRides() {
-  return JSON.parse(localStorage.getItem('cycling_rides') || '[]');
-}
-function saveRides(rides) {
-  localStorage.setItem('cycling_rides', JSON.stringify(rides));
-}
+function loadRides() { return JSON.parse(localStorage.getItem('cycling_rides') || '[]'); }
+function saveRides(r) { localStorage.setItem('cycling_rides', JSON.stringify(r)); }
 
 function startOfWeek() {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  d.setDate(d.getDate() - d.getDay());
-  return d;
+  const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() - d.getDay()); return d;
 }
 
 function renderRides() {
   const rides = loadRides();
   const week = startOfWeek();
-
   let total = 0, weekDist = 0, longest = 0;
   rides.forEach(r => {
     total += r.dist;
     if (new Date(r.date) >= week) weekDist += r.dist;
     if (r.dist > longest) longest = r.dist;
   });
-
-  document.getElementById('stat-rides').textContent = rides.length;
-  document.getElementById('stat-dist').textContent = total.toFixed(1);
-  document.getElementById('stat-week').textContent = weekDist.toFixed(1);
+  document.getElementById('stat-rides').textContent   = rides.length;
+  document.getElementById('stat-dist').textContent    = total.toFixed(1);
+  document.getElementById('stat-week').textContent    = weekDist.toFixed(1);
   document.getElementById('stat-longest').textContent = longest.toFixed(1);
 
   const hist = document.getElementById('ride-history');
   hist.innerHTML = '';
-  rides.slice().reverse().slice(0, 10).forEach((r, revI) => {
-    const i = rides.length - 1 - revI;
+  rides.slice().reverse().slice(0, 10).forEach((r, ri) => {
+    const i = rides.length - 1 - ri;
     const d = new Date(r.date);
     const entry = document.createElement('div');
     entry.className = 'ride-entry';
     entry.innerHTML = `
-      <span class="r-date">${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+      <span class="r-date">${d.toLocaleDateString('en-US',{month:'short',day:'numeric'})}</span>
       <span class="r-dist">${r.dist} km</span>
       <span class="r-time">${r.time || '—'}</span>
-      <span style="color:var(--text-dim);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-left:6px">${r.note || ''}</span>
+      <span style="color:var(--text-dim);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-left:6px">${r.note||''}</span>
       <button class="ride-del" onclick="deleteRide(${i})">✕</button>`;
     hist.appendChild(entry);
   });
@@ -612,12 +895,8 @@ function deleteRide(i) {
 renderRides();
 
 // ── Goals ─────────────────────────────────────────────────────────────────
-function loadGoals() {
-  return JSON.parse(localStorage.getItem('cycling_goals') || '[]');
-}
-function saveGoals(goals) {
-  localStorage.setItem('cycling_goals', JSON.stringify(goals));
-}
+function loadGoals() { return JSON.parse(localStorage.getItem('cycling_goals') || '[]'); }
+function saveGoals(g) { localStorage.setItem('cycling_goals', JSON.stringify(g)); }
 
 function renderGoals() {
   const goals = loadGoals();
@@ -640,9 +919,9 @@ function renderGoals() {
         </div>
       </div>
       <div class="goal-bar-wrap"><div class="goal-bar" style="width:${pct}%"></div></div>
-      <div class="goal-sub">${g.current} / ${g.target} ${g.unit || ''}</div>
+      <div class="goal-sub">${g.current} / ${g.target} ${g.unit||''}</div>
       <div style="display:flex;gap:4px;margin-top:4px">
-        <input class="log-input" type="number" placeholder="+/- update" id="goal-upd-${i}" style="width:80px;font-size:10px;padding:2px 4px">
+        <input class="log-input" type="number" placeholder="new value" id="goal-upd-${i}" style="width:80px;font-size:10px;padding:2px 4px">
         <button class="log-btn" onclick="updateGoalProgress(${i})" style="font-size:10px;padding:2px 8px">Set</button>
       </div>`;
     container.appendChild(div);
@@ -651,24 +930,20 @@ function renderGoals() {
 
 function addGoal(e) {
   e.preventDefault();
-  const label = document.getElementById('goal-label').value.trim();
-  const target = parseFloat(document.getElementById('goal-target').value);
+  const label   = document.getElementById('goal-label').value.trim();
+  const target  = parseFloat(document.getElementById('goal-target').value);
   const current = parseFloat(document.getElementById('goal-current').value) || 0;
-  const unit = document.getElementById('goal-unit').value.trim();
+  const unit    = document.getElementById('goal-unit').value.trim();
   if (!label || !target) return;
   const goals = loadGoals();
   goals.push({ label, target, current, unit });
   saveGoals(goals);
-  document.getElementById('goal-label').value = '';
-  document.getElementById('goal-target').value = '';
-  document.getElementById('goal-current').value = '';
-  document.getElementById('goal-unit').value = '';
+  ['goal-label','goal-target','goal-current','goal-unit'].forEach(id => document.getElementById(id).value = '');
   renderGoals();
 }
 
 function updateGoalProgress(i) {
-  const input = document.getElementById(`goal-upd-${i}`);
-  const val = parseFloat(input.value);
+  const val = parseFloat(document.getElementById(`goal-upd-${i}`).value);
   if (isNaN(val)) return;
   const goals = loadGoals();
   goals[i].current = Math.max(0, val);
