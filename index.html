@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridstack@10/dist/gridstack.min.css">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -47,9 +48,19 @@
     #clock { font-size: 28px; font-weight: bold; color: #fff; letter-spacing: 3px; line-height: 1; }
     #date-display { color: var(--dim); font-size: 12px; margin-top: 3px; letter-spacing: 1px; }
 
-    /* ── Grid ── */
-    #grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; min-width: 0; }
-    #grid > * { min-width: 0; }
+    /* ── Grid / Gridstack ── */
+    .grid-stack { background: transparent; }
+    .grid-stack-item > .grid-stack-item-content { inset: 4px; overflow: hidden; }
+    .ui-resizable-se {
+      position: absolute; bottom: 3px; right: 3px;
+      width: 12px; height: 12px;
+      border-right: 2px solid var(--border);
+      border-bottom: 2px solid var(--border);
+      cursor: se-resize; opacity: 0.4;
+    }
+    .ui-resizable-se:hover { opacity: 1; }
+    .grid-stack-item.ui-draggable-dragging > .grid-stack-item-content { opacity: 0.7; }
+    .grid-stack-placeholder > .placeholder-content { background: var(--surface2); border: 1px dashed var(--border); }
 
     .panel {
       background: var(--surface);
@@ -57,6 +68,9 @@
       padding: 10px;
       overflow: hidden;
       min-width: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
     }
 
     .panel-title {
@@ -70,7 +84,11 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      cursor: grab;
+      user-select: none;
+      flex-shrink: 0;
     }
+    .panel-title:active { cursor: grabbing; }
 
     .badge {
       background: #333;
@@ -128,7 +146,7 @@
     .inp::placeholder { color: var(--muted); }
 
     /* ── Scrollable ── */
-    .scroll { max-height: 260px; overflow-y: auto; }
+    .scroll { flex: 1; min-height: 0; overflow-y: auto; }
     .scroll::-webkit-scrollbar { width: 3px; }
     .scroll::-webkit-scrollbar-track { background: transparent; }
     .scroll::-webkit-scrollbar-thumb { background: var(--border); }
@@ -139,7 +157,7 @@
     .row { display: flex; gap: 6px; align-items: center; }
 
     /* ── WHOOP ── */
-    #panel-whoop { grid-column: 1 / 4; }
+    #panel-whoop { }
 
     #whoop-connect-area { text-align: center; padding: 20px 0; }
     #whoop-connect-btn {
@@ -178,7 +196,6 @@
     .whoop-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; padding-top: 6px; border-top: 1px solid var(--border); }
 
     /* ── Weather ── */
-    #panel-weather { grid-column: 1 / 3; }
     .weather-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; }
     .wx-card { background: var(--surface2); border: 1px solid var(--border); padding: 12px; display: flex; gap: 16px; align-items: flex-start; }
     .wx-main { flex: 0 0 auto; }
@@ -193,7 +210,6 @@
     .wx-row .v { color: #fff; }
 
     /* ── News ── */
-    #panel-news { grid-column: 3 / 5; }
     .news-item { padding: 5px 0; border-bottom: 1px solid var(--border); line-height: 1.5; }
     .news-item:last-child { border-bottom: none; }
     .news-item a { color: #fff; text-decoration: none; display: block; font-size: 13px; }
@@ -202,7 +218,6 @@
     .src-tag { display: inline-block; background: var(--surface2); color: var(--blue); font-size: 9px; padding: 1px 4px; margin-right: 4px; }
 
     /* ── Ride Log ── */
-    #panel-rides { grid-column: 1 / 2; }
     .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px; }
     .stat-box { background: var(--surface2); padding: 8px; border: 1px solid var(--border); }
     .stat-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
@@ -216,16 +231,13 @@
     .r-note { color: var(--dim); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
     /* ── Running Log ── */
-    #panel-run { grid-column: 2 / 3; }
 
     /* ── Quote ── */
-    #panel-quote { grid-column: 3 / 4; }
     .quote-text { font-size: 14px; color: #fff; line-height: 1.7; font-style: italic; margin-bottom: 10px; }
     .quote-attr { font-size: 11px; color: var(--muted); text-align: right; }
     .quote-nav { display: flex; justify-content: flex-end; gap: 6px; margin-top: 10px; }
 
     /* ── Stocks ── */
-    #panel-stocks { grid-column: 4 / 5; grid-row: 1; }
     .stock-item { display: flex; gap: 4px; align-items: center; padding: 4px 0; border-bottom: 1px solid var(--border); font-size: 11px; }
     .stock-item:last-child { border-bottom: none; }
     .stock-sym { color: #fff; font-weight: bold; min-width: 38px; }
@@ -236,7 +248,7 @@
     .dn { color: var(--red); }
 
     /* ── Weekly Plan ── */
-    #panel-plan { grid-column: 4 / 5; }
+    #panel-plan { }
     .plan-meta { font-size: 10px; color: var(--muted); margin-bottom: 8px; display: flex; justify-content: space-between; }
     .plan-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--border); }
     .plan-row:last-child { border-bottom: none; }
@@ -252,16 +264,8 @@
     #ticker .dot { color: var(--muted); margin-right: 6px; }
     @keyframes scroll-left { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
 
-    @media (max-width: 1200px) {
-      #grid { grid-template-columns: 1fr 1fr; }
-      #panel-whoop, #panel-stocks, #panel-weather, #panel-news, #panel-plan { grid-column: 1 / -1; }
-      #panel-rides, #panel-run, #panel-quote { grid-column: auto; }
-      .whoop-metrics { grid-template-columns: 1fr 1fr; }
-    }
     @media (max-width: 700px) {
-      #grid { grid-template-columns: 1fr; }
-      #panel-whoop, #panel-stocks, #panel-weather, #panel-news,
-      #panel-rides, #panel-run, #panel-quote, #panel-plan { grid-column: auto; }
+      .whoop-metrics { grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
@@ -280,10 +284,11 @@
   <div id="ticker">Loading...</div>
 </div>
 
-<div id="grid">
+<div class="grid-stack" id="grid">
 
   <!-- WHOOP -->
-  <div class="panel" id="panel-whoop">
+  <div class="grid-stack-item" gs-x="0" gs-y="0" gs-w="9" gs-h="5" gs-min-w="3" gs-min-h="3">
+  <div class="grid-stack-item-content"><div class="panel" id="panel-whoop">
     <div class="panel-title">
       WHOOP
       <div style="display:flex;gap:8px;align-items:center">
@@ -297,10 +302,11 @@
         <div id="whoop-hint">Opens WHOOP login — you'll be redirected back automatically.</div>
       </div>
     </div>
-  </div>
+  </div></div></div>
 
   <!-- Stocks -->
-  <div class="panel" id="panel-stocks">
+  <div class="grid-stack-item" gs-x="9" gs-y="0" gs-w="3" gs-h="5" gs-min-w="2" gs-min-h="3">
+  <div class="grid-stack-item-content"><div class="panel" id="panel-stocks">
     <div class="panel-title">
       Markets
       <div style="display:flex;gap:6px;align-items:center">
@@ -309,24 +315,27 @@
       </div>
     </div>
     <div id="stocks-body"><div class="loading">Loading...</div></div>
-  </div>
+  </div></div></div>
 
   <!-- Weather -->
-  <div class="panel" id="panel-weather">
+  <div class="grid-stack-item" gs-x="0" gs-y="5" gs-w="6" gs-h="4" gs-min-w="3" gs-min-h="3">
+  <div class="grid-stack-item-content"><div class="panel" id="panel-weather">
     <div class="panel-title">Weather <span class="badge live" id="weather-badge">LIVE</span></div>
     <div class="weather-grid" id="weather-body">
       <div class="loading">Loading weather...</div>
     </div>
-  </div>
+  </div></div></div>
 
   <!-- News -->
-  <div class="panel" id="panel-news">
+  <div class="grid-stack-item" gs-x="6" gs-y="5" gs-w="6" gs-h="4" gs-min-w="3" gs-min-h="3">
+  <div class="grid-stack-item-content"><div class="panel" id="panel-news">
     <div class="panel-title">News <span class="badge" id="news-count">...</span></div>
     <div class="scroll" id="news-list"><div class="loading">Loading headlines...</div></div>
-  </div>
+  </div></div></div>
 
   <!-- Ride Log -->
-  <div class="panel" id="panel-rides">
+  <div class="grid-stack-item" gs-x="0" gs-y="9" gs-w="3" gs-h="5" gs-min-w="2" gs-min-h="3">
+  <div class="grid-stack-item-content"><div class="panel" id="panel-rides">
     <div class="panel-title">Ride Log</div>
     <div class="stat-grid">
       <div class="stat-box"><div class="stat-label">Total Rides</div><div class="stat-value" id="stat-rides">0</div></div>
@@ -341,10 +350,11 @@
       <button class="btn-primary" type="submit">Log</button>
     </form>
     <div class="scroll" id="ride-history"></div>
-  </div>
+  </div></div></div>
 
   <!-- Running Log -->
-  <div class="panel" id="panel-run">
+  <div class="grid-stack-item" gs-x="3" gs-y="9" gs-w="3" gs-h="5" gs-min-w="2" gs-min-h="3">
+  <div class="grid-stack-item-content"><div class="panel" id="panel-run">
     <div class="panel-title">Running Log</div>
     <div class="stat-grid">
       <div class="stat-box"><div class="stat-label">Total Runs</div><div class="stat-value" id="run-total">0</div></div>
@@ -359,10 +369,11 @@
       <button class="btn-primary" type="submit">Log</button>
     </form>
     <div class="scroll" id="run-history"></div>
-  </div>
+  </div></div></div>
 
   <!-- Quote -->
-  <div class="panel" id="panel-quote">
+  <div class="grid-stack-item" gs-x="6" gs-y="9" gs-w="3" gs-h="5" gs-min-w="2" gs-min-h="3">
+  <div class="grid-stack-item-content"><div class="panel" id="panel-quote">
     <div class="panel-title">Today's Thought</div>
     <div class="quote-text" id="quote-text"></div>
     <div class="quote-attr" id="quote-attr"></div>
@@ -370,10 +381,11 @@
       <button class="btn" onclick="prevQuote()">&#8592;</button>
       <button class="btn" onclick="nextQuote()">&#8594;</button>
     </div>
-  </div>
+  </div></div></div>
 
   <!-- Weekly Plan -->
-  <div class="panel" id="panel-plan">
+  <div class="grid-stack-item" gs-x="9" gs-y="9" gs-w="3" gs-h="5" gs-min-w="2" gs-min-h="3">
+  <div class="grid-stack-item-content"><div class="panel" id="panel-plan">
     <div class="panel-title">
       Weekly Plan
       <span id="plan-week-label" style="font-size:9px;color:var(--muted);text-transform:none;letter-spacing:0"></span>
@@ -388,10 +400,11 @@
       <input class="inp" id="plan-input" type="text" placeholder="Add a goal for this week..." style="flex:1" autocomplete="off">
       <button class="btn-primary" type="submit">Add</button>
     </form>
-  </div>
+  </div></div></div>
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/gridstack@10/dist/gridstack-all.js"></script>
 <script>
 // ── Clock ─────────────────────────────────────────────────────────────────
 function updateClock() {
@@ -716,6 +729,7 @@ function renderWhoopData(recovery, sleep, cycle, workouts) {
     </div>
     <div class="whoop-footer">
       <button class="btn" onclick="loadWhoopData()">&#8635; Refresh</button>
+      <button class="btn" onclick="debugWhoopToken()">Token Info</button>
       <button class="btn" onclick="whoopLogout()" style="border-color:var(--red-dark);color:var(--red)">Disconnect</button>
     </div>`;
 }
@@ -1023,6 +1037,40 @@ async function loadStocks() {
 }
 loadStocks();
 setInterval(loadStocks, 5 * 60 * 1000);
+
+// ── WHOOP token debug ─────────────────────────────────────────────────────
+function debugWhoopToken() {
+  const raw = localStorage.getItem('whoop_tokens');
+  if (!raw) { alert('No WHOOP token stored. Connect WHOOP first.'); return; }
+  try {
+    const token = JSON.parse(raw).access_token;
+    const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
+    const scopes = payload.scp || payload.scope || payload.scopes || '(not found in token)';
+    const exp = payload.exp ? new Date(payload.exp * 1000).toLocaleString() : 'unknown';
+    alert(`Token scopes: ${JSON.stringify(scopes)}\nExpires: ${exp}`);
+  } catch (e) {
+    alert('Could not decode token: ' + e.message);
+  }
+}
+
+// ── Gridstack layout ──────────────────────────────────────────────────────
+(function initGrid() {
+  const gsGrid = GridStack.init({
+    column: 12,
+    cellHeight: 62,
+    margin: 6,
+    draggable: { handle: '.panel-title' },
+    resizable: { handles: 'se' },
+    animate: false,
+    float: false,
+    disableOneColumnMode: true,
+  });
+  const saved = localStorage.getItem('gs_layout');
+  if (saved) { try { gsGrid.load(JSON.parse(saved)); } catch {} }
+  gsGrid.on('change', () => {
+    localStorage.setItem('gs_layout', JSON.stringify(gsGrid.save()));
+  });
+})();
 
 // ── Midnight refresh ──────────────────────────────────────────────────────
 function scheduleMidnightRefresh() {
