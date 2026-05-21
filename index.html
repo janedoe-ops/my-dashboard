@@ -428,13 +428,13 @@ const RSS2JSON = 'https://api.rss2json.com/v1/api.json?rss_url=';
 const NEWS_FEEDS = [
   // World
   { label: 'BBC',        url: 'https://feeds.bbci.co.uk/news/world/rss.xml',           cat: 'world' },
-  { label: 'Reuters',    url: 'https://feeds.reuters.com/Reuters/worldNews',            cat: 'world' },
-  { label: 'AP',         url: 'https://rsshub.app/apnews/topics/apf-topnews',          cat: 'world' },
   { label: 'NPR',        url: 'https://feeds.npr.org/1001/rss.xml',                    cat: 'world' },
   { label: 'Guardian',   url: 'https://www.theguardian.com/world/rss',                 cat: 'world' },
   { label: 'Al Jazeera', url: 'https://www.aljazeera.com/xml/rss/all.xml',             cat: 'world' },
   { label: 'ProPublica', url: 'https://feeds.propublica.org/propublica/main',          cat: 'world' },
   { label: 'Intercept',  url: 'https://theintercept.com/feed/?rss',                    cat: 'world' },
+  { label: 'Axios',      url: 'https://api.axios.com/feed/',                           cat: 'world' },
+  { label: 'Wired',      url: 'https://www.wired.com/feed/rss',                        cat: 'world' },
   // Cycling
   { label: 'VeloNews',   url: 'https://www.velonews.com/feed/',                        cat: 'cycling' },
   { label: 'CyclingNews',url: 'https://www.cyclingnews.com/rss/',                      cat: 'cycling' },
@@ -714,7 +714,7 @@ function renderWhoopData(recovery, sleep, cycle, workouts) {
     <div class="whoop-row"><span class="k">Resting HR</span><span class="v" style="font-size:14px;font-weight:bold">${rhr != null ? rhr+' bpm' : '—'}</span></div>
     <div class="whoop-row"><span class="k">SpO₂</span><span class="v">${rec.score?.spo2_percentage?.toFixed(1) ?? '—'}%</span></div>
     ${rec.score_state !== 'SCORED' ? `<div class="loading" style="margin-top:4px">${rec.score_state?.toLowerCase().replace(/_/g,' ') ?? ''}</div>` : ''}
-  ` : '<div class="loading" style="font-size:11px;line-height:1.6">No recovery data.<br>→ <button class="btn" style="font-size:10px;padding:1px 6px" onclick="whoopLogout()">Disconnect</button> then reconnect to refresh permissions.</div>';
+  ` : '<div class="loading" style="font-size:11px;line-height:1.6;color:var(--muted)">No recovery score yet.<br>Wear WHOOP overnight — scores appear after your first tracked sleep.</div>';
 
   const sleepHtml = slp ? `
     <div class="whoop-big c-purple">${sleepDur ? msToHM(sleepDur) : '—'}</div>
@@ -722,7 +722,7 @@ function renderWhoopData(recovery, sleep, cycle, workouts) {
     <div class="whoop-row"><span class="k">REM</span><span class="v">${remMs ? msToHM(remMs) : '—'}</span></div>
     <div class="whoop-row"><span class="k">Deep</span><span class="v">${swsMs ? msToHM(swsMs) : '—'}</span></div>
     ${slp.score_state !== 'SCORED' ? `<div class="loading" style="margin-top:4px">${slp.score_state?.toLowerCase().replace(/_/g,' ') ?? ''}</div>` : ''}
-  ` : '<div class="loading">No sleep data — open WHOOP app &amp; sync</div>';
+  ` : '<div class="loading" style="font-size:11px;color:var(--muted)">No sleep data yet — wear WHOOP overnight to populate this.</div>';
 
   const strainHtml = cyc ? `
     <div class="whoop-big ${strain != null ? strainClass(strain) : 'c-blue'}">${strain != null ? strain.toFixed(1) : '—'}</div>
@@ -1016,7 +1016,8 @@ const STOCK_LIST = [
 ];
 
 async function fetchQuote(s) {
-  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${s.sym}?range=1d&interval=5m&includePrePost=false`;
+  // 1-month daily closes for a meaningful sparkline
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${s.sym}?range=1mo&interval=1d&includePrePost=false`;
   const res = await fetch('https://corsproxy.io/?' + encodeURIComponent(url));
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const data = await res.json();
