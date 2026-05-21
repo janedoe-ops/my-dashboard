@@ -39,6 +39,7 @@
             redirect_uri:  REDIRECT_URI,
             grant_type:    'authorization_code',
             code_verifier: verifier,
+            scope:         'read:recovery read:sleep read:cycles read:workout read:profile read:body_measurement offline',
           }),
         });
 

@@ -593,6 +593,7 @@ async function whoopLogin() {
     client_id: W.CLIENT_ID, redirect_uri: W.REDIRECT_URI,
     response_type: 'code', scope: W.SCOPES, state,
     code_challenge: challenge, code_challenge_method: 'S256',
+    prompt: 'consent',
   });
 }
 
@@ -608,6 +609,7 @@ async function whoopRefresh(tokens) {
     body: new URLSearchParams({
       client_id: W.CLIENT_ID, client_secret: W.CLIENT_SECRET,
       refresh_token: tokens.refresh_token, grant_type: 'refresh_token',
+      scope: W.SCOPES,
     }),
   });
   const data = await res.json();
