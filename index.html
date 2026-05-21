@@ -560,15 +560,31 @@ const SPORTS = {
   84: 'Yoga', 91: 'Tennis', 126: 'MTB', 127: 'Skiing', 128: 'Squash',
 };
 
-function whoopLogin() {
+function pkceVerifier() {
+  const arr = new Uint8Array(32);
+  crypto.getRandomValues(arr);
+  return btoa(String.fromCharCode(...arr)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+}
+
+async function pkceChallenge(verifier) {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier));
+  return btoa(String.fromCharCode(...new Uint8Array(digest))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+}
+
+async function whoopLogin() {
+  const verifier = pkceVerifier();
+  const challenge = await pkceChallenge(verifier);
   const state = Math.random().toString(36).slice(2);
+  localStorage.setItem('whoop_verifier', verifier);
   localStorage.setItem('whoop_state', state);
   const url = W.AUTH_URL + '?' + new URLSearchParams({
-    client_id:     W.CLIENT_ID,
-    redirect_uri:  W.REDIRECT_URI,
-    response_type: 'code',
-    scope:         W.SCOPES,
+    client_id:             W.CLIENT_ID,
+    redirect_uri:          W.REDIRECT_URI,
+    response_type:         'code',
+    scope:                 W.SCOPES,
     state,
+    code_challenge:        challenge,
+    code_challenge_method: 'S256',
   });
   window.location.href = url;
 }
@@ -584,7 +600,6 @@ async function whoopRefreshToken(tokens) {
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({
       client_id:     W.CLIENT_ID,
-      client_secret: W.CLIENT_SECRET,
       refresh_token: tokens.refresh_token,
       grant_type:    'refresh_token',
     }),
