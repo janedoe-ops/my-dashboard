@@ -680,7 +680,7 @@ function renderWhoopData(recovery, sleep, cycle, workouts) {
     <div class="whoop-row"><span class="k">Resting HR</span><span class="v" style="font-size:14px;font-weight:bold">${rhr != null ? rhr+' bpm' : '—'}</span></div>
     <div class="whoop-row"><span class="k">SpO₂</span><span class="v">${rec.score?.spo2_percentage?.toFixed(1) ?? '—'}%</span></div>
     ${rec.score_state !== 'SCORED' ? `<div class="loading" style="margin-top:4px">${rec.score_state?.toLowerCase().replace(/_/g,' ') ?? ''}</div>` : ''}
-  ` : '<div class="loading">No recovery data — open WHOOP app &amp; sync</div>';
+  ` : '<div class="loading" style="font-size:11px;line-height:1.6">No recovery data.<br>→ <button class="btn" style="font-size:10px;padding:1px 6px" onclick="whoopLogout()">Disconnect</button> then reconnect to refresh permissions.</div>';
 
   const sleepHtml = slp ? `
     <div class="whoop-big c-purple">${sleepDur ? msToHM(sleepDur) : '—'}</div>
@@ -969,40 +969,55 @@ function deletePlan(i) {
 renderPlan();
 
 // ── Stocks ────────────────────────────────────────────────────────────────
-const STOCK_SYMS = ['TSLA', 'NVDA', 'AAPL', 'MSFT', 'META', 'AMZN', '^GSPC', '^IXIC'];
-const STOCK_LABELS = { '^GSPC': 'S&P', '^IXIC': 'NAS' };
+const STOCK_LIST = [
+  { sym: 'TSLA',    label: 'TSLA' },
+  { sym: 'NVDA',    label: 'NVDA' },
+  { sym: 'AAPL',    label: 'AAPL' },
+  { sym: 'MSFT',    label: 'MSFT' },
+  { sym: 'META',    label: 'META' },
+  { sym: 'AMZN',    label: 'AMZN' },
+  { sym: '%5EGSPC', label: 'S&P'  },
+  { sym: '%5EIXIC', label: 'NAS'  },
+];
+
+async function fetchQuote(s) {
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${s.sym}?range=1d&interval=1d&includePrePost=false`;
+  const res = await fetch('https://corsproxy.io/?' + encodeURIComponent(url));
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const data = await res.json();
+  const meta = data?.chart?.result?.[0]?.meta;
+  if (!meta?.regularMarketPrice) throw new Error('no price');
+  const price = meta.regularMarketPrice;
+  const prev  = meta.chartPreviousClose ?? price;
+  const chg   = price - prev;
+  const pct   = prev ? (chg / prev) * 100 : 0;
+  return { label: s.label, price, chg, pct, state: meta.marketState };
+}
 
 async function loadStocks() {
   const container = document.getElementById('stocks-body');
-  const badge = document.getElementById('stocks-badge');
-  try {
-    const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${STOCK_SYMS.join(',')}`;
-    const res = await fetch('https://corsproxy.io/?' + encodeURIComponent(url));
-    const data = await res.json();
-    const quotes = data?.quoteResponse?.result;
-    if (!quotes?.length) throw new Error('No data');
-    badge.textContent = 'LIVE'; badge.className = 'badge live';
-    const state = quotes[0]?.marketState;
-    document.getElementById('stocks-status').textContent =
-      state === 'CLOSED' ? 'market closed' : state === 'POST' ? 'after-hours' : state === 'PRE' ? 'pre-market' : '';
-    container.innerHTML = quotes.map(q => {
-      const sym = STOCK_LABELS[q.symbol] || q.symbol;
-      const price = q.regularMarketPrice?.toFixed(2) ?? '—';
-      const chg = q.regularMarketChange;
-      const pct = q.regularMarketChangePercent;
-      const cls = (chg ?? 0) >= 0 ? 'up' : 'dn';
-      const sign = (chg ?? 0) >= 0 ? '+' : '';
-      return `<div class="stock-item">
-        <span class="stock-sym">${sym}</span>
-        <span class="stock-price">${price}</span>
-        <span class="stock-chg ${cls}">${chg != null ? sign + chg.toFixed(2) : '—'}</span>
-        <span class="stock-pct ${cls}">${pct != null ? sign + pct.toFixed(2) + '%' : '—'}</span>
-      </div>`;
-    }).join('');
-  } catch (e) {
+  const badge     = document.getElementById('stocks-badge');
+  const results   = await Promise.allSettled(STOCK_LIST.map(fetchQuote));
+  const quotes    = results.filter(r => r.status === 'fulfilled').map(r => r.value);
+  if (!quotes.length) {
     badge.textContent = 'ERR'; badge.className = 'badge err';
-    container.innerHTML = `<div class="error-msg">Markets unavailable: ${e.message}</div>`;
+    container.innerHTML = '<div class="error-msg">Markets unavailable</div>';
+    return;
   }
+  badge.textContent = 'LIVE'; badge.className = 'badge live';
+  const state = quotes[0]?.state;
+  document.getElementById('stocks-status').textContent =
+    state === 'CLOSED' ? 'market closed' : state === 'POST' ? 'after-hours' : state === 'PRE' ? 'pre-market' : '';
+  container.innerHTML = quotes.map(q => {
+    const cls  = q.chg >= 0 ? 'up' : 'dn';
+    const sign = q.chg >= 0 ? '+' : '';
+    return `<div class="stock-item">
+      <span class="stock-sym">${q.label}</span>
+      <span class="stock-price">$${q.price.toFixed(2)}</span>
+      <span class="stock-chg ${cls}">${sign}${q.chg.toFixed(2)}</span>
+      <span class="stock-pct ${cls}">${sign}${q.pct.toFixed(2)}%</span>
+    </div>`;
+  }).join('');
 }
 loadStocks();
 setInterval(loadStocks, 5 * 60 * 1000);
