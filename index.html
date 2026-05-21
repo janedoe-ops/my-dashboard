@@ -232,44 +232,20 @@
     .plan-progress-bar { height: 3px; background: var(--border); margin: 8px 0; }
     .plan-progress-fill { height: 100%; background: var(--green); transition: width 0.4s; }
 
-    /* ── Resize grip ── */
-    .grip {
-      height: 8px;
-      margin: 6px -10px -10px;
-      cursor: ns-resize;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0.3;
-      transition: opacity 0.15s;
-      flex-shrink: 0;
-    }
-    .grip:hover { opacity: 1; }
-    .grip::before {
-      content: '';
-      width: 32px;
-      height: 3px;
-      border-top: 1px solid var(--dim);
-      border-bottom: 1px solid var(--dim);
-    }
-    .panel { display: flex; flex-direction: column; }
-    .panel-inner { flex: 1; overflow: hidden; }
-
     /* ── Ticker ── */
     #ticker-wrap { border-top: 1px solid var(--border); margin-top: 12px; padding-top: 6px; overflow: hidden; white-space: nowrap; }
     #ticker { display: inline-block; animation: scroll-left 240s linear infinite; color: var(--dim); font-size: 14px; }
     #ticker .dot { color: var(--muted); margin-right: 6px; }
     @keyframes scroll-left { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
 
-    @media (max-width: 900px) {
+    @media (max-width: 1100px) {
       #grid { grid-template-columns: 1fr 1fr; }
-      #panel-whoop, #panel-weather, #panel-news, #panel-news2 { grid-column: 1 / 3; }
+      #panel-whoop, #panel-weather, #panel-news, #panel-news2, #panel-plan { grid-column: 1 / -1; }
+      #panel-rides, #panel-run, #panel-quote { grid-column: auto; }
       .whoop-metrics { grid-template-columns: 1fr 1fr; }
-      .weather-grid { grid-template-columns: 1fr; }
-      #panel-rides { grid-column: auto; }
-      #panel-plan  { grid-column: 1 / 3; }
+      .weather-grid  { grid-template-columns: 1fr 1fr; }
     }
-    @media (max-width: 600px) {
+    @media (max-width: 700px) {
       #grid { grid-template-columns: 1fr; }
       #panel-whoop, #panel-weather, #panel-news, #panel-news2,
       #panel-rides, #panel-run, #panel-quote, #panel-plan { grid-column: auto; }
@@ -687,7 +663,7 @@ async function loadWhoopData() {
   document.getElementById('whoop-badge').textContent = 'LOADING...';
   document.getElementById('whoop-badge').className = 'badge';
   try {
-    const start = new Date(Date.now() - 4 * 86400000).toISOString().slice(0,10) + 'T00:00:00.000Z';
+    const start = new Date(Date.now() - 24 * 3600000).toISOString();
     const [recovery, sleep, cycle, workouts] = await Promise.all([
       whoopGet(`/recovery?start=${start}`).catch(() => ({ records: [] })),
       whoopGet(`/activity/sleep?start=${start}`).catch(() => ({ records: [] })),
@@ -914,52 +890,19 @@ function deletePlan(i) {
 }
 renderPlan();
 
-// ── Panel resize ──────────────────────────────────────────────────────────
-document.querySelectorAll('.panel').forEach(panel => {
-  const grip = document.createElement('div');
-  grip.className = 'grip';
-  grip.title = 'Drag to resize';
-  panel.appendChild(grip);
-
-  let startY = 0, startH = 0;
-
-  grip.addEventListener('mousedown', e => {
-    startY = e.clientY;
-    startH = panel.offsetHeight;
-    e.preventDefault();
-
-    const onMove = e => {
-      const newH = Math.max(80, startH + (e.clientY - startY));
-      panel.style.height = newH + 'px';
-      panel.style.minHeight = newH + 'px';
-    };
-    const onUp = () => {
-      document.removeEventListener('mousemove', onMove);
-      document.removeEventListener('mouseup', onUp);
-    };
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseup', onUp);
-  });
-
-  // Touch support
-  grip.addEventListener('touchstart', e => {
-    startY = e.touches[0].clientY;
-    startH = panel.offsetHeight;
-    e.preventDefault();
-
-    const onMove = e => {
-      const newH = Math.max(80, startH + (e.touches[0].clientY - startY));
-      panel.style.height = newH + 'px';
-      panel.style.minHeight = newH + 'px';
-    };
-    const onEnd = () => {
-      grip.removeEventListener('touchmove', onMove);
-      grip.removeEventListener('touchend', onEnd);
-    };
-    grip.addEventListener('touchmove', onMove, { passive: false });
-    grip.addEventListener('touchend', onEnd);
-  }, { passive: false });
-});
+// ── Midnight refresh ──────────────────────────────────────────────────────
+function scheduleMidnightRefresh() {
+  const now = new Date();
+  const midnight = new Date(now);
+  midnight.setHours(24, 0, 0, 0);
+  setTimeout(() => {
+    loadWhoopData();
+    loadAllNews();
+    loadWeather();
+    scheduleMidnightRefresh();
+  }, midnight - now);
+}
+scheduleMidnightRefresh();
 </script>
 </body>
 </html>
