@@ -559,7 +559,8 @@ async function whoopGet(path) {
   const token = await whoopToken();
   if (!token) return null;
   const res = await fetch('https://corsproxy.io/?' + W.API + path, { headers: { Authorization: `Bearer ${token}` } });
-  if (!res.ok) throw new Error(`${res.status}`);
+  if (res.status === 404) return { records: [] };
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.json();
 }
 
@@ -652,10 +653,10 @@ async function loadWhoopData() {
   document.getElementById('whoop-badge').className = 'badge';
   try {
     const [recovery, sleep, cycle, workouts] = await Promise.all([
-      whoopGet('/recovery?limit=1'),
-      whoopGet('/activity/sleep?limit=3'),
-      whoopGet('/cycle?limit=1'),
-      whoopGet('/activity/workout?limit=5'),
+      whoopGet('/recovery').catch(() => ({ records: [] })),
+      whoopGet('/activity/sleep').catch(() => ({ records: [] })),
+      whoopGet('/cycle').catch(() => ({ records: [] })),
+      whoopGet('/activity/workout').catch(() => ({ records: [] })),
     ]);
     renderWhoopData(recovery, sleep, cycle, workouts);
   } catch (e) {
