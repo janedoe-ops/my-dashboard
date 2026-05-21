@@ -35,16 +35,17 @@
 
     /* ── Header ── */
     #header {
-      display: flex;
-      justify-content: space-between;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
       align-items: center;
       border-bottom: 1px solid var(--border);
-      padding-bottom: 8px;
+      padding-bottom: 10px;
       margin-bottom: 12px;
     }
-    #header h1 { font-size: 15px; color: #fff; letter-spacing: 3px; text-transform: uppercase; }
-    #clock { font-size: 20px; font-weight: bold; color: #fff; letter-spacing: 2px; }
-    #date-display { color: var(--dim); font-size: 11px; text-align: right; }
+    #header h1 { font-size: 14px; color: var(--dim); letter-spacing: 3px; text-transform: uppercase; }
+    #header-center { text-align: center; }
+    #clock { font-size: 28px; font-weight: bold; color: #fff; letter-spacing: 3px; line-height: 1; }
+    #date-display { color: var(--dim); font-size: 12px; margin-top: 3px; letter-spacing: 1px; }
 
     /* ── Grid ── */
     #grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; min-width: 0; }
@@ -193,14 +194,12 @@
 
     /* ── News ── */
     #panel-news { grid-column: 1 / -1; }
-    #news-list { columns: 2; column-gap: 20px; }
-    .news-item { padding: 5px 0; border-bottom: 1px solid var(--border); line-height: 1.5; break-inside: avoid; }
+    .news-item { padding: 5px 0; border-bottom: 1px solid var(--border); line-height: 1.5; }
     .news-item:last-child { border-bottom: none; }
     .news-item a { color: #fff; text-decoration: none; display: block; font-size: 13px; }
     .news-item a:hover { color: var(--blue); }
     .news-item .meta { color: var(--muted); font-size: 11px; margin-top: 2px; }
     .src-tag { display: inline-block; background: var(--surface2); color: var(--blue); font-size: 9px; padding: 1px 4px; margin-right: 4px; }
-    @media (max-width: 700px) { #news-list { columns: 1; } }
 
     /* ── Ride Log ── */
     #panel-rides { grid-column: 1 / 2; }
@@ -259,10 +258,11 @@
 
 <div id="header">
   <h1>&#9650; Dashboard</h1>
-  <div>
+  <div id="header-center">
     <div id="clock">--:--:--</div>
     <div id="date-display">--</div>
   </div>
+  <div id="header-right"></div>
 </div>
 
 <div id="grid">
@@ -384,26 +384,27 @@ setInterval(updateClock, 1000);
 const RSS2JSON = 'https://api.rss2json.com/v1/api.json?rss_url=';
 const NEWS_FEEDS = [
   // World
-  { label: 'BBC',        url: 'https://feeds.bbci.co.uk/news/world/rss.xml' },
-  { label: 'Reuters',    url: 'https://feeds.reuters.com/Reuters/worldNews' },
-  { label: 'AP',         url: 'https://rsshub.app/apnews/topics/apf-topnews' },
-  { label: 'NPR',        url: 'https://feeds.npr.org/1001/rss.xml' },
-  { label: 'Guardian',   url: 'https://www.theguardian.com/world/rss' },
-  { label: 'Al Jazeera', url: 'https://www.aljazeera.com/xml/rss/all.xml' },
-  { label: 'ProPublica', url: 'https://feeds.propublica.org/propublica/main' },
-  { label: 'Intercept',  url: 'https://theintercept.com/feed/?rss' },
+  { label: 'BBC',        url: 'https://feeds.bbci.co.uk/news/world/rss.xml',           cat: 'world' },
+  { label: 'Reuters',    url: 'https://feeds.reuters.com/Reuters/worldNews',            cat: 'world' },
+  { label: 'AP',         url: 'https://rsshub.app/apnews/topics/apf-topnews',          cat: 'world' },
+  { label: 'NPR',        url: 'https://feeds.npr.org/1001/rss.xml',                    cat: 'world' },
+  { label: 'Guardian',   url: 'https://www.theguardian.com/world/rss',                 cat: 'world' },
+  { label: 'Al Jazeera', url: 'https://www.aljazeera.com/xml/rss/all.xml',             cat: 'world' },
+  { label: 'ProPublica', url: 'https://feeds.propublica.org/propublica/main',          cat: 'world' },
+  { label: 'Intercept',  url: 'https://theintercept.com/feed/?rss',                    cat: 'world' },
   // Cycling
-  { label: 'VeloNews',   url: 'https://www.velonews.com/feed/' },
-  { label: 'CyclingNews',url: 'https://www.cyclingnews.com/feeds/news/' },
-  { label: 'BikeRadar',  url: 'https://www.bikeradar.com/feed/' },
+  { label: 'VeloNews',   url: 'https://www.velonews.com/feed/',                        cat: 'cycling' },
+  { label: 'CyclingNews',url: 'https://www.cyclingnews.com/rss/',                      cat: 'cycling' },
+  { label: 'BikeRadar',  url: 'https://www.bikeradar.com/feed/',                       cat: 'cycling' },
   // Space
-  { label: 'NASA',       url: 'https://www.nasa.gov/rss/dyn/breaking_news.rss' },
-  { label: 'Space.com',  url: 'https://www.space.com/feeds/all' },
-  { label: 'Spaceflight',url: 'https://spaceflightnow.com/feed/' },
+  { label: 'NASA',       url: 'https://www.nasa.gov/news-release/feed/',               cat: 'space' },
+  { label: 'Space.com',  url: 'https://www.space.com/feeds/all',                       cat: 'space' },
+  { label: 'Spaceflight',url: 'https://spaceflightnow.com/feed/',                      cat: 'space' },
   // Nuclear
-  { label: 'Bulletin',   url: 'https://thebulletin.org/feed/' },
-  { label: 'WNN',        url: 'https://www.world-nuclear-news.org/rss/news.xml' },
+  { label: 'Bulletin',   url: 'https://thebulletin.org/feed/',                         cat: 'nuclear' },
+  { label: 'WNN',        url: 'https://www.world-nuclear-news.org/rss/news.xml',        cat: 'nuclear' },
 ];
+const CAT_LIMITS = { world: 14, cycling: 6, space: 6, nuclear: 5 };
 
 function timeAgo(dateStr) {
   const s = (Date.now() - new Date(dateStr)) / 1000;
@@ -413,35 +414,54 @@ function timeAgo(dateStr) {
   return `${Math.floor(s/86400)}d ago`;
 }
 
-async function loadFeed(feeds, listId, countId, max) {
-  const container = document.getElementById(listId);
+async function fetchFeed(f) {
+  try {
+    const d = await fetch(RSS2JSON + encodeURIComponent(f.url)).then(r => r.json());
+    if (d.status === 'ok' && d.items?.length) {
+      return d.items.slice(0, 8).map(i => ({ title: i.title, link: i.link, pubDate: i.pubDate, _src: f.label, _cat: f.cat }));
+    }
+  } catch {}
+  try {
+    const xml = await fetch('https://corsproxy.io/?' + encodeURIComponent(f.url)).then(r => r.text());
+    const doc = new DOMParser().parseFromString(xml, 'text/xml');
+    return [...doc.querySelectorAll('item, entry')].slice(0, 8).map(item => ({
+      title: item.querySelector('title')?.textContent?.trim() || '',
+      link: item.querySelector('link')?.textContent?.trim() || item.querySelector('link')?.getAttribute('href') || '',
+      pubDate: item.querySelector('pubDate')?.textContent || item.querySelector('published')?.textContent || '',
+      _src: f.label,
+      _cat: f.cat,
+    })).filter(i => i.title);
+  } catch {}
+  return [];
+}
+
+let tickerTitles = [];
+async function loadAllNews() {
+  const container = document.getElementById('news-list');
+  const results = await Promise.all(NEWS_FEEDS.map(f => fetchFeed(f)));
+  const byCategory = {};
+  results.forEach(items => items.forEach(item => {
+    if (!byCategory[item._cat]) byCategory[item._cat] = [];
+    byCategory[item._cat].push(item);
+  }));
   const all = [];
-  const results = await Promise.all(
-    feeds.map(f =>
-      fetch(RSS2JSON + encodeURIComponent(f.url))
-        .then(r => r.json())
-        .then(d => (d.items || []).map(i => ({ ...i, _src: f.label })))
-        .catch(() => [])
-    )
-  );
-  results.forEach(a => all.push(...a));
+  Object.entries(CAT_LIMITS).forEach(([cat, max]) => {
+    const items = (byCategory[cat] || [])
+      .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate))
+      .slice(0, max);
+    all.push(...items);
+  });
   all.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
   container.innerHTML = '';
-  const shown = all.slice(0, max);
-  document.getElementById(countId).textContent = shown.length;
-  if (!shown.length) { container.innerHTML = '<div class="error-msg">Could not load feeds.</div>'; return []; }
-  shown.forEach(a => {
+  document.getElementById('news-count').textContent = all.length;
+  if (!all.length) { container.innerHTML = '<div class="error-msg">Could not load feeds.</div>'; return; }
+  all.forEach(a => {
     const div = document.createElement('div');
     div.className = 'news-item';
     div.innerHTML = `<a href="${a.link}" target="_blank" rel="noopener"><span class="src-tag">${a._src}</span>${a.title}</a><div class="meta">${a.pubDate ? timeAgo(a.pubDate) : ''}</div>`;
     container.appendChild(div);
   });
-  return shown.map(a => `[${a._src}] ${a.title}`);
-}
-
-let tickerTitles = [];
-async function loadAllNews() {
-  tickerTitles = await loadFeed(NEWS_FEEDS, 'news-list', 'news-count', 30);
+  tickerTitles = all.map(a => `[${a._src}] ${a.title}`);
   updateTicker();
 }
 function updateTicker() {
@@ -466,17 +486,30 @@ const WX_CODES = {
   95:'Thunderstorm', 96:'Thunderstorm + Hail', 99:'Severe Thunderstorm',
 };
 function windDir(d) { return ['N','NE','E','SE','S','SW','W','NW'][Math.round(d/45)%8]; }
+function uvLabel(uv) { return uv < 3 ? 'Low' : uv < 6 ? 'Moderate' : uv < 8 ? 'High' : uv < 11 ? 'Very High' : 'Extreme'; }
+function aqiLabel(aqi) { return aqi <= 50 ? 'Good' : aqi <= 100 ? 'Moderate' : aqi <= 150 ? 'Sensitive' : aqi <= 200 ? 'Unhealthy' : 'Very Unhealthy'; }
 
 async function loadWeather() {
   const container = document.getElementById('weather-body');
   try {
-    const results = await Promise.all(WX_LOCATIONS.map(loc =>
-      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}` +
-        `&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m,precipitation` +
-        `&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=${loc.tz}`)
-        .then(r => r.json()).then(d => ({ loc, cur: d.current }))
-    ));
-    container.innerHTML = results.map(({ loc, cur }) => `
+    const results = await Promise.all(WX_LOCATIONS.map(async loc => {
+      const [wx, aq] = await Promise.all([
+        fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}` +
+          `&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m,precipitation` +
+          `&hourly=uv_index&forecast_days=1` +
+          `&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=${loc.tz}`)
+          .then(r => r.json()),
+        fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${loc.lat}&longitude=${loc.lon}&current=us_aqi,pm2_5`)
+          .then(r => r.json()).catch(() => null),
+      ]);
+      const nowLocal = new Date().toLocaleString('sv-SE', { timeZone: loc.tz });
+      const curHour = nowLocal.slice(0, 13).replace(' ', 'T');
+      const hourIdx = (wx.hourly?.time || []).findIndex(t => t.slice(0, 13) === curHour);
+      const uvIndex = hourIdx >= 0 ? wx.hourly.uv_index[hourIdx] : null;
+      const aqi = aq?.current?.us_aqi ?? null;
+      return { loc, cur: wx.current, uvIndex, aqi };
+    }));
+    container.innerHTML = results.map(({ loc, cur, uvIndex, aqi }) => `
       <div class="wx-card">
         <div class="wx-main">
           <div class="wx-city">${loc.name}</div>
@@ -488,6 +521,8 @@ async function loadWeather() {
           <div class="wx-row"><span class="k">Wind</span><span class="v">${Math.round(cur.wind_speed_10m)} mph ${windDir(cur.wind_direction_10m)}</span></div>
           <div class="wx-row"><span class="k">Humidity</span><span class="v">${cur.relative_humidity_2m}%</span></div>
           <div class="wx-row"><span class="k">Precip</span><span class="v">${cur.precipitation.toFixed(2)} in</span></div>
+          <div class="wx-row"><span class="k">UV Index</span><span class="v">${uvIndex != null ? uvIndex.toFixed(1) + ' · ' + uvLabel(uvIndex) : '—'}</span></div>
+          <div class="wx-row"><span class="k">Air Quality</span><span class="v">${aqi != null ? aqi + ' · ' + aqiLabel(aqi) : '—'}</span></div>
         </div>
       </div>`).join('');
   } catch (e) {
