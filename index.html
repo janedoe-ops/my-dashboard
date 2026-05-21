@@ -246,6 +246,13 @@
     .stock-pct { min-width: 50px; text-align: right; }
     .up { color: var(--green); }
     .dn { color: var(--red); }
+    .stock-exp { padding: 5px 0; border-bottom: 1px solid var(--border); }
+    .stock-exp:last-child { border-bottom: none; }
+    .stock-exp-top { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+    .stock-exp-top .stock-sym { min-width: 36px; }
+    .stock-exp-top .stock-price { flex: 1; color: #fff; text-align: right; }
+    .stock-exp-top .stock-pct { min-width: 52px; text-align: right; font-weight: bold; }
+    .stock-exp-meta { display: flex; gap: 10px; font-size: 10px; color: var(--muted); margin-top: 1px; }
 
     /* ── Weekly Plan ── */
     #panel-plan { }
@@ -997,46 +1004,111 @@ const STOCK_LIST = [
 ];
 
 async function fetchQuote(s) {
-  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${s.sym}?range=1d&interval=1d&includePrePost=false`;
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${s.sym}?range=1d&interval=5m&includePrePost=false`;
   const res = await fetch('https://corsproxy.io/?' + encodeURIComponent(url));
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const data = await res.json();
-  const meta = data?.chart?.result?.[0]?.meta;
+  const result = data?.chart?.result?.[0];
+  const meta   = result?.meta;
   if (!meta?.regularMarketPrice) throw new Error('no price');
-  const price = meta.regularMarketPrice;
-  const prev  = meta.chartPreviousClose ?? price;
-  const chg   = price - prev;
-  const pct   = prev ? (chg / prev) * 100 : 0;
-  return { label: s.label, price, chg, pct, state: meta.marketState };
+  const price  = meta.regularMarketPrice;
+  const prev   = meta.chartPreviousClose ?? price;
+  const chg    = price - prev;
+  const pct    = prev ? (chg / prev) * 100 : 0;
+  const closes = result?.indicators?.quote?.[0]?.close || [];
+  return {
+    label: s.label, price, chg, pct, state: meta.marketState, closes,
+    high: meta.regularMarketDayHigh, low: meta.regularMarketDayLow,
+    volume: meta.regularMarketVolume,
+  };
+}
+
+function fmtVol(v) {
+  if (!v) return '—';
+  if (v >= 1e9) return (v/1e9).toFixed(1)+'B';
+  if (v >= 1e6) return (v/1e6).toFixed(1)+'M';
+  return (v/1e3).toFixed(0)+'K';
+}
+
+function sparkline(closes, color) {
+  const pts = closes.filter(p => p != null);
+  if (pts.length < 2) return '';
+  const mn = Math.min(...pts), mx = Math.max(...pts), rng = mx - mn || 1;
+  const W = 200, H = 38;
+  const path = closes
+    .map((p, i) => p != null ? `${(i/(closes.length-1))*W},${H-((p-mn)/rng)*H}` : null)
+    .filter(Boolean).join(' ');
+  return `<svg width="100%" height="${H}" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="display:block;margin:3px 0">
+    <polyline points="${path}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+  </svg>`;
+}
+
+let _stockQuotes = [];
+
+function renderStocks(w, h) {
+  if (!_stockQuotes.length) return;
+  const container = document.getElementById('stocks-body');
+  if (!container) return;
+  const showChart = w >= 380 && h >= 320;
+  const showChg   = w >= 220;
+
+  if (showChart) {
+    container.innerHTML = _stockQuotes.map(q => {
+      const cls   = q.chg >= 0 ? 'up' : 'dn';
+      const color = q.chg >= 0 ? '#47c47a' : '#d94f4f';
+      const sign  = q.chg >= 0 ? '+' : '';
+      return `<div class="stock-exp">
+        <div class="stock-exp-top">
+          <span class="stock-sym">${q.label}</span>
+          <span class="stock-price">$${q.price.toFixed(2)}</span>
+          <span class="stock-pct ${cls}">${sign}${q.pct.toFixed(2)}%</span>
+        </div>
+        ${sparkline(q.closes, color)}
+        <div class="stock-exp-meta">
+          <span>H $${q.high?.toFixed(2)??'—'}</span>
+          <span>L $${q.low?.toFixed(2)??'—'}</span>
+          <span>Vol ${fmtVol(q.volume)}</span>
+        </div>
+      </div>`;
+    }).join('');
+  } else {
+    container.innerHTML = _stockQuotes.map(q => {
+      const cls  = q.chg >= 0 ? 'up' : 'dn';
+      const sign = q.chg >= 0 ? '+' : '';
+      return `<div class="stock-item">
+        <span class="stock-sym">${q.label}</span>
+        <span class="stock-price">$${q.price.toFixed(2)}</span>
+        ${showChg ? `<span class="stock-chg ${cls}">${sign}${q.chg.toFixed(2)}</span>` : ''}
+        <span class="stock-pct ${cls}">${sign}${q.pct.toFixed(2)}%</span>
+      </div>`;
+    }).join('');
+  }
 }
 
 async function loadStocks() {
-  const container = document.getElementById('stocks-body');
-  const badge     = document.getElementById('stocks-badge');
-  const results   = await Promise.allSettled(STOCK_LIST.map(fetchQuote));
-  const quotes    = results.filter(r => r.status === 'fulfilled').map(r => r.value);
-  if (!quotes.length) {
+  const badge = document.getElementById('stocks-badge');
+  const results = await Promise.allSettled(STOCK_LIST.map(fetchQuote));
+  _stockQuotes  = results.filter(r => r.status === 'fulfilled').map(r => r.value);
+  if (!_stockQuotes.length) {
     badge.textContent = 'ERR'; badge.className = 'badge err';
-    container.innerHTML = '<div class="error-msg">Markets unavailable</div>';
+    document.getElementById('stocks-body').innerHTML = '<div class="error-msg">Markets unavailable</div>';
     return;
   }
   badge.textContent = 'LIVE'; badge.className = 'badge live';
-  const state = quotes[0]?.state;
+  const state = _stockQuotes[0]?.state;
   document.getElementById('stocks-status').textContent =
     state === 'CLOSED' ? 'market closed' : state === 'POST' ? 'after-hours' : state === 'PRE' ? 'pre-market' : '';
-  container.innerHTML = quotes.map(q => {
-    const cls  = q.chg >= 0 ? 'up' : 'dn';
-    const sign = q.chg >= 0 ? '+' : '';
-    return `<div class="stock-item">
-      <span class="stock-sym">${q.label}</span>
-      <span class="stock-price">$${q.price.toFixed(2)}</span>
-      <span class="stock-chg ${cls}">${sign}${q.chg.toFixed(2)}</span>
-      <span class="stock-pct ${cls}">${sign}${q.pct.toFixed(2)}%</span>
-    </div>`;
-  }).join('');
+  const panel = document.getElementById('panel-stocks');
+  renderStocks(panel?.offsetWidth ?? 300, panel?.offsetHeight ?? 250);
 }
 loadStocks();
 setInterval(loadStocks, 5 * 60 * 1000);
+
+// Adaptive resize for stocks
+new ResizeObserver(entries => {
+  const { width, height } = entries[0].contentRect;
+  renderStocks(width, height);
+}).observe(document.getElementById('panel-stocks'));
 
 // ── WHOOP token debug ─────────────────────────────────────────────────────
 function debugWhoopToken() {
