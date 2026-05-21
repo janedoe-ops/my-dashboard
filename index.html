@@ -18,16 +18,16 @@
       --red: #ff4747;
       --green: #47ff8a;
       --yellow: #e8ff47;
-      --muted: #555;
-      --text: #e0e0e0;
-      --text-dim: #888;
+      --muted: #777;
+      --text: #ffffff;
+      --text-dim: #bbbbbb;
     }
 
     body {
       background: var(--bg);
       color: var(--text);
       font-family: 'Courier New', monospace;
-      font-size: 13px;
+      font-size: 14px;
       min-height: 100vh;
       padding: 12px;
     }
@@ -181,9 +181,9 @@
 
     .news-item { padding: 5px 0; border-bottom: 1px solid var(--border); line-height: 1.4; }
     .news-item:last-child { border-bottom: none; }
-    .news-item a { color: var(--text); text-decoration: none; display: block; }
+    .news-item a { color: #fff; text-decoration: none; display: block; font-size: 13px; line-height: 1.5; }
     .news-item a:hover { color: var(--accent2); }
-    .news-item .meta { color: var(--muted); font-size: 10px; margin-top: 2px; }
+    .news-item .meta { color: var(--muted); font-size: 11px; margin-top: 2px; }
     .news-item .src-tag {
       display: inline-block;
       background: var(--surface2);
@@ -326,20 +326,54 @@
       100% { transform: translateX(-100%); }
     }
 
-    .loading { color: var(--muted); font-size: 11px; }
-    .error   { color: var(--red);   font-size: 11px; }
+    .loading { color: var(--muted); font-size: 12px; }
+    .error   { color: var(--red);   font-size: 12px; }
 
-    .scroll-inner { max-height: 280px; overflow-y: auto; }
+    .scroll-inner { max-height: 260px; overflow-y: auto; }
     .scroll-inner::-webkit-scrollbar { width: 4px; }
     .scroll-inner::-webkit-scrollbar-track { background: var(--surface); }
     .scroll-inner::-webkit-scrollbar-thumb { background: var(--border); }
 
+    /* ── Weather ── */
+    #panel-weather { grid-column: 1 / 4; }
+    .weather-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .wx-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 12px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .wx-main { flex: 0 0 auto; }
+    .wx-city { font-size: 11px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 2px; }
+    .wx-temp { font-size: 48px; font-weight: bold; line-height: 1; color: #fff; }
+    .wx-temp sup { font-size: 20px; color: var(--text-dim); }
+    .wx-cond { font-size: 13px; color: var(--text-dim); margin-top: 4px; }
+    .wx-details { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 4px; padding-top: 4px; }
+    .wx-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      padding: 3px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .wx-row:last-child { border-bottom: none; }
+    .wx-row .k { color: var(--muted); }
+    .wx-row .v { color: #fff; }
+
     @media (max-width: 900px) {
       #grid { grid-template-columns: 1fr 1fr; }
-      #panel-whoop { grid-column: 1 / 3; }
-      #panel-news  { grid-column: 1 / 3; }
-      #panel-news2 { grid-column: 1 / 3; }
-      .whoop-metrics { grid-template-columns: 1fr 1fr; }
+      #panel-whoop    { grid-column: 1 / 3; }
+      #panel-weather  { grid-column: 1 / 3; }
+      #panel-news     { grid-column: 1 / 3; }
+      #panel-news2    { grid-column: 1 / 3; }
+      .whoop-metrics  { grid-template-columns: 1fr 1fr; }
+      .weather-grid   { grid-template-columns: 1fr; }
     }
     @media (max-width: 600px) {
       #grid { grid-template-columns: 1fr; }
@@ -374,6 +408,14 @@
         <button id="whoop-connect-btn" onclick="whoopLogin()">&#9650; Connect WHOOP</button>
         <div id="whoop-hint">Opens WHOOP login in this tab — you'll be redirected back automatically.</div>
       </div>
+    </div>
+  </div>
+
+  <!-- Weather -->
+  <div class="panel" id="panel-weather">
+    <div class="panel-title">Weather <span class="badge" id="weather-badge">LIVE</span></div>
+    <div class="weather-grid" id="weather-body">
+      <div class="loading">Loading weather...</div>
     </div>
   </div>
 
@@ -780,6 +822,68 @@ async function loadWhoopData() {
     setInterval(loadWhoopData, 15 * 60 * 1000);
   }
 })();
+
+// ── Weather ───────────────────────────────────────────────────────────────
+const WX_LOCATIONS = [
+  { name: 'Oxford, MS',  lat: 34.3665, lon: -89.5193, tz: 'America/Chicago'  },
+  { name: 'Dallas, TX',  lat: 32.7767, lon: -96.7970, tz: 'America/Chicago'  },
+];
+
+const WX_CODES = {
+  0:'Clear', 1:'Mostly Clear', 2:'Partly Cloudy', 3:'Overcast',
+  45:'Foggy', 48:'Icy Fog',
+  51:'Light Drizzle', 53:'Drizzle', 55:'Heavy Drizzle',
+  61:'Light Rain', 63:'Rain', 65:'Heavy Rain',
+  71:'Light Snow', 73:'Snow', 75:'Heavy Snow', 77:'Snow Grains',
+  80:'Light Showers', 81:'Showers', 82:'Heavy Showers',
+  85:'Snow Showers', 86:'Heavy Snow Showers',
+  95:'Thunderstorm', 96:'Thunderstorm + Hail', 99:'Severe Thunderstorm',
+};
+
+function windDir(deg) {
+  return ['N','NE','E','SE','S','SW','W','NW'][Math.round(deg / 45) % 8];
+}
+
+async function loadWeather() {
+  const container = document.getElementById('weather-body');
+  try {
+    const results = await Promise.all(WX_LOCATIONS.map(loc =>
+      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}` +
+        `&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m,precipitation` +
+        `&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=${loc.tz}`)
+        .then(r => r.json())
+        .then(d => ({ loc, cur: d.current }))
+    ));
+
+    container.innerHTML = results.map(({ loc, cur }) => {
+      const temp    = Math.round(cur.temperature_2m);
+      const feels   = Math.round(cur.apparent_temperature);
+      const cond    = WX_CODES[cur.weather_code] ?? `Code ${cur.weather_code}`;
+      const wind    = `${Math.round(cur.wind_speed_10m)} mph ${windDir(cur.wind_direction_10m)}`;
+      const humid   = `${cur.relative_humidity_2m}%`;
+      const precip  = `${cur.precipitation.toFixed(2)} in`;
+      return `
+        <div class="wx-card">
+          <div class="wx-main">
+            <div class="wx-city">${loc.name}</div>
+            <div class="wx-temp">${temp}<sup>°F</sup></div>
+            <div class="wx-cond">${cond}</div>
+          </div>
+          <div class="wx-details">
+            <div class="wx-row"><span class="k">Feels Like</span><span class="v">${feels}°F</span></div>
+            <div class="wx-row"><span class="k">Wind</span><span class="v">${wind}</span></div>
+            <div class="wx-row"><span class="k">Humidity</span><span class="v">${humid}</span></div>
+            <div class="wx-row"><span class="k">Precip</span><span class="v">${precip}</span></div>
+          </div>
+        </div>`;
+    }).join('');
+  } catch (e) {
+    container.innerHTML = `<div class="error">Weather unavailable: ${e.message}</div>`;
+  }
+}
+
+loadWeather();
+setInterval(loadWeather, 10 * 60 * 1000);
 
 // ── Skill Tracker ─────────────────────────────────────────────────────────
 function loadSkills() { return JSON.parse(localStorage.getItem('cycling_skills') || '[]'); }
