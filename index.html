@@ -41,8 +41,8 @@
       padding-bottom: 8px;
       margin-bottom: 12px;
     }
-    #header h1 { font-size: 15px; color: var(--accent); letter-spacing: 3px; text-transform: uppercase; }
-    #clock { font-size: 20px; font-weight: bold; color: var(--accent); letter-spacing: 2px; }
+    #header h1 { font-size: 15px; color: #fff; letter-spacing: 3px; text-transform: uppercase; }
+    #clock { font-size: 20px; font-weight: bold; color: #fff; letter-spacing: 2px; }
     #date-display { color: var(--text-dim); font-size: 11px; text-align: right; }
 
     /* ── Grid ── */
@@ -63,7 +63,7 @@
       font-size: 10px;
       letter-spacing: 2px;
       text-transform: uppercase;
-      color: var(--accent);
+      color: #fff;
       border-bottom: 1px solid var(--border);
       padding-bottom: 6px;
       margin-bottom: 8px;
@@ -151,7 +151,7 @@
     }
     .whoop-workout:last-child { border-bottom: none; }
     .wo-sport { color: var(--accent2); min-width: 90px; }
-    .wo-strain { color: var(--accent); font-weight: bold; width: 28px; text-align: right; }
+    .wo-strain { color: #fff; font-weight: bold; width: 28px; text-align: right; }
     .wo-dur { color: var(--text-dim); width: 50px; text-align: right; }
     .wo-date { color: var(--muted); font-size: 10px; width: 55px; text-align: right; }
 
@@ -201,7 +201,7 @@
     .skill-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .skill-bar-wrap { width: 80px; height: 6px; background: var(--border); flex-shrink: 0; }
     .skill-bar { height: 100%; background: var(--accent); transition: width 0.3s; }
-    .skill-score { font-size: 11px; color: var(--accent); width: 24px; text-align: right; flex-shrink: 0; }
+    .skill-score { font-size: 11px; color: #fff; width: 24px; text-align: right; flex-shrink: 0; }
     .skill-actions { display: flex; gap: 3px; flex-shrink: 0; }
     .skill-btn {
       background: var(--surface2);
@@ -247,7 +247,7 @@
     .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px; }
     .stat-box { background: var(--surface2); padding: 8px; border: 1px solid var(--border); }
     .stat-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
-    .stat-value { font-size: 18px; font-weight: bold; color: var(--accent); margin-top: 2px; }
+    .stat-value { font-size: 18px; font-weight: bold; color: #fff; margin-top: 2px; }
     .stat-unit { font-size: 10px; color: var(--text-dim); }
 
     .log-form { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
@@ -292,7 +292,7 @@
     .goal-item:last-child { border-bottom: none; }
     .goal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; }
     .goal-name { font-size: 12px; }
-    .goal-pct { font-size: 11px; color: var(--accent); }
+    .goal-pct { font-size: 11px; color: #fff; }
     .goal-bar-wrap { height: 4px; background: var(--border); }
     .goal-bar { height: 100%; background: var(--accent2); transition: width 0.3s; }
     .goal-sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
@@ -319,8 +319,8 @@
       overflow: hidden;
       white-space: nowrap;
     }
-    #ticker { display: inline-block; animation: scroll-left 60s linear infinite; color: var(--text-dim); font-size: 11px; }
-    #ticker span.t-head { color: var(--accent); margin-right: 4px; }
+    #ticker { display: inline-block; animation: scroll-left 180s linear infinite; color: var(--text-dim); font-size: 12px; }
+    #ticker span.t-head { color: var(--muted); margin-right: 4px; }
     @keyframes scroll-left {
       0%   { transform: translateX(100vw); }
       100% { transform: translateX(-100%); }
@@ -350,7 +350,7 @@
       align-items: flex-start;
     }
     .wx-main { flex: 0 0 auto; }
-    .wx-city { font-size: 11px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 2px; }
+    .wx-city { font-size: 11px; color: var(--text-dim); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 2px; }
     .wx-temp { font-size: 48px; font-weight: bold; line-height: 1; color: #fff; }
     .wx-temp sup { font-size: 20px; color: var(--text-dim); }
     .wx-cond { font-size: 13px; color: var(--text-dim); margin-top: 4px; }
@@ -637,7 +637,7 @@ function whoopLogout() {
 }
 
 async function whoopRefreshToken(tokens) {
-  const res = await fetch(W.TOKEN_URL, {
+  const res = await fetch('https://corsproxy.io/?' + W.TOKEN_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({
