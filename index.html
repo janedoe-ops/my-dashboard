@@ -294,7 +294,7 @@
 <div class="grid-stack" id="grid">
 
   <!-- WHOOP -->
-  <div class="grid-stack-item" gs-x="0" gs-y="0" gs-w="9" gs-h="5" gs-min-w="3" gs-min-h="3">
+  <div class="grid-stack-item" id="gs-whoop" gs-x="0" gs-y="0" gs-w="9" gs-h="5" gs-min-w="3" gs-min-h="3">
   <div class="grid-stack-item-content"><div class="panel" id="panel-whoop">
     <div class="panel-title">
       WHOOP
@@ -312,7 +312,7 @@
   </div></div></div>
 
   <!-- Stocks -->
-  <div class="grid-stack-item" gs-x="9" gs-y="0" gs-w="3" gs-h="5" gs-min-w="2" gs-min-h="3">
+  <div class="grid-stack-item" id="gs-stocks" gs-x="9" gs-y="0" gs-w="3" gs-h="5" gs-min-w="2" gs-min-h="3">
   <div class="grid-stack-item-content"><div class="panel" id="panel-stocks">
     <div class="panel-title">
       Markets
@@ -325,7 +325,7 @@
   </div></div></div>
 
   <!-- Weather -->
-  <div class="grid-stack-item" gs-x="0" gs-y="5" gs-w="6" gs-h="4" gs-min-w="3" gs-min-h="3">
+  <div class="grid-stack-item" id="gs-weather" gs-x="0" gs-y="5" gs-w="6" gs-h="4" gs-min-w="3" gs-min-h="3">
   <div class="grid-stack-item-content"><div class="panel" id="panel-weather">
     <div class="panel-title">Weather <span class="badge live" id="weather-badge">LIVE</span></div>
     <div class="weather-grid" id="weather-body">
@@ -334,14 +334,14 @@
   </div></div></div>
 
   <!-- News -->
-  <div class="grid-stack-item" gs-x="6" gs-y="5" gs-w="6" gs-h="4" gs-min-w="3" gs-min-h="3">
+  <div class="grid-stack-item" id="gs-news" gs-x="6" gs-y="5" gs-w="6" gs-h="4" gs-min-w="3" gs-min-h="3">
   <div class="grid-stack-item-content"><div class="panel" id="panel-news">
     <div class="panel-title">News <span class="badge" id="news-count">...</span></div>
     <div class="scroll" id="news-list"><div class="loading">Loading headlines...</div></div>
   </div></div></div>
 
   <!-- Ride Log -->
-  <div class="grid-stack-item" gs-x="0" gs-y="9" gs-w="3" gs-h="5" gs-min-w="2" gs-min-h="3">
+  <div class="grid-stack-item" id="gs-rides" gs-x="0" gs-y="9" gs-w="3" gs-h="5" gs-min-w="2" gs-min-h="3">
   <div class="grid-stack-item-content"><div class="panel" id="panel-rides">
     <div class="panel-title">Ride Log</div>
     <div class="stat-grid">
@@ -360,7 +360,7 @@
   </div></div></div>
 
   <!-- Running Log -->
-  <div class="grid-stack-item" gs-x="3" gs-y="9" gs-w="3" gs-h="5" gs-min-w="2" gs-min-h="3">
+  <div class="grid-stack-item" id="gs-run" gs-x="3" gs-y="9" gs-w="3" gs-h="5" gs-min-w="2" gs-min-h="3">
   <div class="grid-stack-item-content"><div class="panel" id="panel-run">
     <div class="panel-title">Running Log</div>
     <div class="stat-grid">
@@ -379,7 +379,7 @@
   </div></div></div>
 
   <!-- Quote -->
-  <div class="grid-stack-item" gs-x="6" gs-y="9" gs-w="3" gs-h="5" gs-min-w="2" gs-min-h="3">
+  <div class="grid-stack-item" id="gs-quote" gs-x="6" gs-y="9" gs-w="3" gs-h="5" gs-min-w="2" gs-min-h="3">
   <div class="grid-stack-item-content"><div class="panel" id="panel-quote">
     <div class="panel-title">Today's Thought</div>
     <div class="quote-text" id="quote-text"></div>
@@ -391,7 +391,7 @@
   </div></div></div>
 
   <!-- Weekly Plan -->
-  <div class="grid-stack-item" gs-x="9" gs-y="9" gs-w="3" gs-h="5" gs-min-w="2" gs-min-h="3">
+  <div class="grid-stack-item" id="gs-plan" gs-x="9" gs-y="9" gs-w="3" gs-h="5" gs-min-w="2" gs-min-h="3">
   <div class="grid-stack-item-content"><div class="panel" id="panel-plan">
     <div class="panel-title">
       Weekly Plan
@@ -650,9 +650,21 @@ async function whoopToken() {
 async function whoopGet(path) {
   const token = await whoopToken();
   if (!token) return null;
-  const res = await fetch('https://corsproxy.io/?' + W.API + path, { headers: { Authorization: `Bearer ${token}` } });
-  if (res.status === 404) return { records: [] };
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const targetUrl = W.API + path;
+  const proxyUrl  = 'https://corsproxy.io/?' + encodeURIComponent(targetUrl);
+  const res = await fetch(proxyUrl, {
+    headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+  });
+  if (res.status === 404) {
+    const body = await res.text().catch(() => '');
+    console.warn(`WHOOP 404 [${path}] body:`, body || '(empty)');
+    return { records: [] };
+  }
+  if (!res.ok) {
+    const body = await res.text().catch(() => '');
+    console.warn(`WHOOP ${res.status} [${path}] body:`, body || '(empty)');
+    throw new Error(`HTTP ${res.status}`);
+  }
   return res.json();
 }
 
@@ -1049,8 +1061,8 @@ function renderStocks(w, h) {
   if (!_stockQuotes.length) return;
   const container = document.getElementById('stocks-body');
   if (!container) return;
-  const showChart = w >= 380 && h >= 320;
-  const showChg   = w >= 220;
+  const showChart = w >= 240 && h >= 200;
+  const showChg   = w >= 180;
 
   if (showChart) {
     container.innerHTML = _stockQuotes.map(q => {
@@ -1137,10 +1149,30 @@ function debugWhoopToken() {
     float: false,
     disableOneColumnMode: true,
   });
+
   const saved = localStorage.getItem('gs_layout');
-  if (saved) { try { gsGrid.load(JSON.parse(saved)); } catch {} }
+  if (saved) {
+    try {
+      const layout = JSON.parse(saved);
+      // Match saved positions to existing items by ID, then apply x/y/w/h
+      layout.forEach(item => {
+        if (!item.id) return;
+        const el = document.getElementById(item.id);
+        if (el) gsGrid.update(el, { x: item.x, y: item.y, w: item.w, h: item.h });
+      });
+    } catch (e) {
+      localStorage.removeItem('gs_layout');
+    }
+  }
+
   gsGrid.on('change', () => {
-    localStorage.setItem('gs_layout', JSON.stringify(gsGrid.save()));
+    const layout = gsGrid.save(false);
+    // Persist each item keyed by its DOM id
+    const items = gsGrid.getGridItems().map(el => {
+      const node = el.gridstackNode;
+      return { id: el.id, x: node.x, y: node.y, w: node.w, h: node.h };
+    });
+    localStorage.setItem('gs_layout', JSON.stringify(items));
   });
 })();
 
