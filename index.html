@@ -232,6 +232,29 @@
     .plan-progress-bar { height: 3px; background: var(--border); margin: 8px 0; }
     .plan-progress-fill { height: 100%; background: var(--green); transition: width 0.4s; }
 
+    /* ── Resize grip ── */
+    .grip {
+      height: 8px;
+      margin: 6px -10px -10px;
+      cursor: ns-resize;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.3;
+      transition: opacity 0.15s;
+      flex-shrink: 0;
+    }
+    .grip:hover { opacity: 1; }
+    .grip::before {
+      content: '';
+      width: 32px;
+      height: 3px;
+      border-top: 1px solid var(--dim);
+      border-bottom: 1px solid var(--dim);
+    }
+    .panel { display: flex; flex-direction: column; }
+    .panel-inner { flex: 1; overflow: hidden; }
+
     /* ── Ticker ── */
     #ticker-wrap { border-top: 1px solid var(--border); margin-top: 12px; padding-top: 6px; overflow: hidden; white-space: nowrap; }
     #ticker { display: inline-block; animation: scroll-left 240s linear infinite; color: var(--dim); font-size: 14px; }
@@ -245,6 +268,13 @@
       .weather-grid { grid-template-columns: 1fr; }
       #panel-rides { grid-column: auto; }
       #panel-plan  { grid-column: 1 / 3; }
+    }
+    @media (max-width: 600px) {
+      #grid { grid-template-columns: 1fr; }
+      #panel-whoop, #panel-weather, #panel-news, #panel-news2,
+      #panel-rides, #panel-run, #panel-quote, #panel-plan { grid-column: auto; }
+      .whoop-metrics { grid-template-columns: 1fr 1fr; }
+      .weather-grid  { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -382,9 +412,14 @@ setInterval(updateClock, 1000);
 // ── News ──────────────────────────────────────────────────────────────────
 const RSS2JSON = 'https://api.rss2json.com/v1/api.json?rss_url=';
 const NEWS_FEEDS = [
-  { label: 'BBC',     url: 'https://feeds.bbci.co.uk/news/world/rss.xml' },
-  { label: 'Reuters', url: 'https://feeds.reuters.com/Reuters/worldNews' },
-  { label: 'AP',      url: 'https://rsshub.app/apnews/topics/apf-topnews' },
+  { label: 'BBC',        url: 'https://feeds.bbci.co.uk/news/world/rss.xml' },
+  { label: 'Reuters',    url: 'https://feeds.reuters.com/Reuters/worldNews' },
+  { label: 'AP',         url: 'https://rsshub.app/apnews/topics/apf-topnews' },
+  { label: 'NPR',        url: 'https://feeds.npr.org/1001/rss.xml' },
+  { label: 'Guardian',   url: 'https://www.theguardian.com/world/rss' },
+  { label: 'Al Jazeera', url: 'https://www.aljazeera.com/xml/rss/all.xml' },
+  { label: 'ProPublica', url: 'https://feeds.propublica.org/propublica/main' },
+  { label: 'Intercept',  url: 'https://theintercept.com/feed/?rss' },
 ];
 const CYCLING_FEEDS = [
   { label: 'VeloNews',    url: 'https://www.velonews.com/feed/' },
@@ -606,17 +641,17 @@ function renderWhoopData(recovery, sleep, cycle, workouts) {
 
   const recHtml = rec?.score_state === 'SCORED' && recScore != null ? `
     <div class="whoop-big ${recClass(recScore)}">${Math.round(recScore)}<span style="font-size:14px;color:var(--dim)">%</span></div>
-    <div class="whoop-row"><span class="k">HRV</span><span class="v">${hrv != null ? Math.round(hrv)+' ms' : '—'}</span></div>
-    <div class="whoop-row"><span class="k">Resting HR</span><span class="v">${rhr ?? '—'} bpm</span></div>
+    <div class="whoop-row"><span class="k">HRV</span><span class="v" style="font-size:14px;font-weight:bold;color:#fff">${hrv != null ? Math.round(hrv)+' ms' : '—'}</span></div>
+    <div class="whoop-row"><span class="k">Resting HR</span><span class="v" style="font-size:14px;font-weight:bold;color:#fff">${rhr != null ? rhr+' bpm' : '—'}</span></div>
     <div class="whoop-row"><span class="k">SpO₂</span><span class="v">${rec.score.spo2_percentage?.toFixed(1) ?? '—'}%</span></div>
-  ` : '<div class="loading">Calibrating or no data</div>';
+  ` : '<div class="loading">No recovery data yet — check WHOOP has synced</div>';
 
   const sleepHtml = slp?.score_state === 'SCORED' && sleepPerf != null ? `
-    <div class="whoop-big c-purple">${Math.round(sleepPerf)}<span style="font-size:14px;color:var(--dim)">%</span></div>
-    <div class="whoop-row"><span class="k">Duration</span><span class="v">${sleepDur ? msToHM(sleepDur) : '—'}</span></div>
+    <div class="whoop-big c-purple">${sleepDur ? msToHM(sleepDur) : '—'}</div>
+    <div class="whoop-row"><span class="k">Sleep Score</span><span class="v" style="font-size:14px;font-weight:bold;color:#fff">${Math.round(sleepPerf)}%</span></div>
     <div class="whoop-row"><span class="k">REM</span><span class="v">${remMs ? msToHM(remMs) : '—'}</span></div>
     <div class="whoop-row"><span class="k">Deep</span><span class="v">${swsMs ? msToHM(swsMs) : '—'}</span></div>
-  ` : '<div class="loading">No sleep data</div>';
+  ` : '<div class="loading">No sleep data yet — check WHOOP has synced</div>';
 
   const strainHtml = cyc?.score_state === 'SCORED' && strain != null ? `
     <div class="whoop-big ${strainClass(strain)}">${strain.toFixed(1)}</div>
@@ -652,10 +687,11 @@ async function loadWhoopData() {
   document.getElementById('whoop-badge').textContent = 'LOADING...';
   document.getElementById('whoop-badge').className = 'badge';
   try {
+    const start = new Date(Date.now() - 4 * 86400000).toISOString().slice(0,10) + 'T00:00:00.000Z';
     const [recovery, sleep, cycle, workouts] = await Promise.all([
-      whoopGet('/recovery').catch(() => ({ records: [] })),
-      whoopGet('/activity/sleep').catch(() => ({ records: [] })),
-      whoopGet('/cycle').catch(() => ({ records: [] })),
+      whoopGet(`/recovery?start=${start}`).catch(() => ({ records: [] })),
+      whoopGet(`/activity/sleep?start=${start}`).catch(() => ({ records: [] })),
+      whoopGet(`/cycle?start=${start}`).catch(() => ({ records: [] })),
       whoopGet('/activity/workout').catch(() => ({ records: [] })),
     ]);
     renderWhoopData(recovery, sleep, cycle, workouts);
@@ -877,6 +913,53 @@ function deletePlan(i) {
   const plan = loadPlan(); plan.items.splice(i,1); savePlan(plan); renderPlan();
 }
 renderPlan();
+
+// ── Panel resize ──────────────────────────────────────────────────────────
+document.querySelectorAll('.panel').forEach(panel => {
+  const grip = document.createElement('div');
+  grip.className = 'grip';
+  grip.title = 'Drag to resize';
+  panel.appendChild(grip);
+
+  let startY = 0, startH = 0;
+
+  grip.addEventListener('mousedown', e => {
+    startY = e.clientY;
+    startH = panel.offsetHeight;
+    e.preventDefault();
+
+    const onMove = e => {
+      const newH = Math.max(80, startH + (e.clientY - startY));
+      panel.style.height = newH + 'px';
+      panel.style.minHeight = newH + 'px';
+    };
+    const onUp = () => {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+    };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  });
+
+  // Touch support
+  grip.addEventListener('touchstart', e => {
+    startY = e.touches[0].clientY;
+    startH = panel.offsetHeight;
+    e.preventDefault();
+
+    const onMove = e => {
+      const newH = Math.max(80, startH + (e.touches[0].clientY - startY));
+      panel.style.height = newH + 'px';
+      panel.style.minHeight = newH + 'px';
+    };
+    const onEnd = () => {
+      grip.removeEventListener('touchmove', onMove);
+      grip.removeEventListener('touchend', onEnd);
+    };
+    grip.addEventListener('touchmove', onMove, { passive: false });
+    grip.addEventListener('touchend', onEnd);
+  }, { passive: false });
+});
 </script>
 </body>
 </html>
